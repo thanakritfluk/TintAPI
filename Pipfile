@@ -10,6 +10,8 @@ requests = "*"
 numpy = "*"
 pillow = "==8.1.0"
 dlib = "==19.21.1"
+pymongo = {extras = ["srv"], version = "*"}
+python-dotenv = "*"
 
 [dev-packages]
 
