@@ -15,7 +15,7 @@ def before_request():
 def insert_lipstick():
     lipstick = Lipstick('FlukLip', '#54612', 500)
     insert = lipstick.insert()
-    return("Success insert id: "+str(insert), 200)
+    return("Success insert id:"+str(insert), 200)
 
 
 # This method returns lipstick
