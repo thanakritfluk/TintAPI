@@ -13,7 +13,7 @@ def before_request():
 
 @app.route('/api/add/lipstick')
 def insert_lipstick():
-    lipstick = Lipstick('FlukLip', '#54612', 500)
+    lipstick = Lipstick('FlukLip', '#EBA38B', 500)
     insert = lipstick.insert()
     return("Success insert id:"+str(insert), 200)
 
