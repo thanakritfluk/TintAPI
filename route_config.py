@@ -1,6 +1,7 @@
 from flask import Flask, request
-from "/models/lipstick.py" import Lipstick
-from detection.detector import face_detect
+from models.lipstick import Lipstick
+from lipstick_detection import detect_mouth_np_array
+from detector import face_detect
 # app reference
 app = Flask(__name__)
 
@@ -27,10 +28,8 @@ def predict_lipstick():
     ref_face = request.files['ref_face']
     if ref_face.filename == '':
         return {"detail": "Invalid file or filename missing"}, 400
-    file_type = (ref_face.content_type).split('/')[1]
-    file_path = "./image/input/source." + file_type
-    ref_face.save(file_path)
-    face_detect(file_path,file_type)
+    data =  face_detect(ref_face)
+    print(detect_mouth_np_array(data))
     return "Success"
 
 
