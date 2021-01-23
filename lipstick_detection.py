@@ -4,64 +4,12 @@ import dlib
 import numpy as np
 import colorsys
 import PIL.Image as Image
-from colormath.color_objects import LabColor
-from colormath.color_diff import delta_e_cie2000
+from utils.color_similarity import compare_delta_e
 from os.path import join as pjoin
 from detector import face_detect
 
 # Contain all lipstick detect function
 
-# Method for converting RGB color space to LAB color space
-def rgb2lab(R,G,B):
-    # Convert RGB to XYZ
-    var_R = ( R / 255.0 )        # R from 0 to 255
-    var_G = ( G / 255.0 )        # G from 0 to 255
-    var_B = ( B / 255.0 )        # B from 0 to 255
-
-    if ( var_R > 0.04045 ): 
-        var_R = ( ( var_R + 0.055 ) / 1.055 ) ** 2.4
-    else:                   
-        var_R = var_R / 12.92
-    if ( var_G > 0.04045 ): 
-        var_G = ( ( var_G + 0.055 ) / 1.055 ) ** 2.4
-    else:                   
-        var_G = var_G / 12.92
-    if ( var_B > 0.04045 ): 
-        var_B = ( ( var_B + 0.055 ) / 1.055 ) ** 2.4
-    else:                   
-        var_B = var_B / 12.92
-
-    var_R = var_R * 100.0
-    var_G = var_G * 100.0
-    var_B = var_B * 100.0
-
-    # Observer. = 2°, Illuminant = D65
-    X = var_R * 0.4124 + var_G * 0.3576 + var_B * 0.1805
-    Y = var_R * 0.2126 + var_G * 0.7152 + var_B * 0.0722
-    Z = var_R * 0.0193 + var_G * 0.1192 + var_B * 0.9505
-    
-    # Convert XYZ to L*a*b*
-    var_X = X / 95.047         # ref_X =  95.047   Observer= 2°, Illuminant= D65
-    var_Y = Y / 100.000        # ref_Y = 100.000
-    var_Z = Z / 108.883        # ref_Z = 108.883
-
-    if ( var_X > 0.008856 ): 
-        var_X = var_X ** ( 1.0/3.0 )
-    else:                    
-        var_X = ( 7.787 * var_X ) + ( 16.0 / 116.0 )
-    if ( var_Y > 0.008856 ): 
-        var_Y = var_Y ** ( 1.0/3.0 )
-    else:
-        var_Y = ( 7.787 * var_Y ) + ( 16.0 / 116.0 )
-    if ( var_Z > 0.008856 ): 
-        var_Z = var_Z ** ( 1.0/3.0 )
-    else:                    
-        var_Z = ( 7.787 * var_Z ) + ( 16.0 / 116.0 )
-
-    CIE_L = ( 116.0 * var_Y ) - 16.0
-    CIE_a = 500.0 * ( var_X - var_Y )
-    CIE_b = 200.0 * ( var_Y - var_Z )
-    return (CIE_L, CIE_a, CIE_b)
 
 def get_dominant(img):
     max_score = 0.0
@@ -156,29 +104,11 @@ def predict_lipstick_color(ref_img):
     lip_np_pos = detect_mouth_np_array(data)
     crop(data[1],lip_np_pos)
 
-def compare_delta_e (mean_color):
+def get_lipstick (mean_color):
     # TODO: operate data from database or whatever which need all of lipstick
     sum = 0 # TODO: sum = amount of color in database
     RGB_array = np.zeros((sum,3), dtype=int) #TODO: in RGB array must contain an [R G B] color separately
-    DELTA_E_temp = np.zeros((sum,1), dtype=float)
-    for i in range(sum):
-        # take an R G B value from RGB array for each color
-        R=RGB_array[i][0]
-        G=RGB_array[i][1]
-        B=RGB_array[i][2]
-        
-        # convert RGB to lab color space for put in an comparison formula which is delta e cie2000
-        lab1 = rgb2lab(R,G,B)
-        lab2 = rgb2lab(mean_color[0], mean_color[1] , mean_color[2])
-
-        # create color from lab value
-        # Reference color.
-        color1 = LabColor(lab_l=lab1[0], lab_a=lab1[1], lab_b=lab1[2])
-        # Color to be compared to the reference.
-        color2 = LabColor(lab_l=lab2[0], lab_a=lab2[1], lab_b=lab2[2])
-        # This is your delta E value as a float.
-        DELTA_E_temp[i] = delta_e_cie2000(color1, color2, Kl=1, Kc=1, Kh=1)
-    
+    DELTA_E_temp = compare_delta_e(mean_color,RGB_array)
     # sort index of delta_e by delta e value ASC
     result=sorted(range(len(DELTA_E_temp)), key=lambda k: DELTA_E_temp[k])
     top_three = []
