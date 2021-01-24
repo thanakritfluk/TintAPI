@@ -16,4 +16,4 @@ def compare_delta_e (mean_color,RGB_tuple):
     color2 = LabColor(lab_l=lab2[0], lab_a=lab2[1], lab_b=lab2[2])
     # This is your delta E value as a float.
     delta_e = delta_e_cie2000(color1, color2, Kl=1, Kc=1, Kh=1)
-    return delta_e
+    return float(format(delta_e,".3f"))
