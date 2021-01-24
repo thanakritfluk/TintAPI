@@ -1,6 +1,7 @@
 from flask import Flask, request
 from models.lipstick import Lipstick
 from lipstick_detection import predict_lipstick_color
+from db.database import DB
 # from detector import face_detect
 # app reference
 app = Flask(__name__)
@@ -19,6 +20,11 @@ def insert_lipstick():
     insert = lipstick.insert()
     return("Success insert id:"+str(insert), 200)
 
+@app.route('/api/lipstick/brand')
+def get_lipstick_brand():
+    brand = DB.distint_lipstick()
+    print("All brand =",brand)
+    return("Success",200)
 
 @app.route('/api/prediction/lipstick', methods=['POST'])
 def predict_lipstick():

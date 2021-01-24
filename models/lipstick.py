@@ -10,6 +10,6 @@ class Lipstick(object):
 
     def insert(self):
         return DB.insert(collection='Lipstick', data=self.json())
-        
+
     def json(self):
         return {'name':self.name,'product_colors':self.color,'price':self.price, 'created_at':self.created_at}
