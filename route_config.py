@@ -7,8 +7,6 @@ from db.database import DB
 app = Flask(__name__)
 
 # This method executes before any API request
-
-
 @app.before_request
 def before_request():
     print('before API request')
@@ -22,7 +20,7 @@ def insert_lipstick():
 
 @app.route('/api/lipstick/brand')
 def get_lipstick_brand():
-    brand = DB.distint_lipstick()
+    brand = Lipstick.distinct_brand()
     print("All brand =",brand)
     return("Success",200)
 
@@ -34,8 +32,6 @@ def predict_lipstick():
     ref_face = request.files['ref_face']
     if ref_face.filename == '':
         return {"detail": "Invalid file or filename missing"}, 400
-    # data =  face_detect(ref_face)
-    # print(detect_mouth_np_array(data))
     predict_lipstick_color(ref_face)
     return "Success"
 
@@ -45,16 +41,13 @@ def predict_lipstick():
 def get_lipstick_list():
     return "Lipstick list[GET]"
 
+
 # This is POST method which stores foundation.
-
-
 @app.route('/api/foundation', methods=['POST'])
 def store_foundation_data():
     return "foundation list[POST]"
 
 # This method executes after every API request.
-
-
 @app.after_request
 def after_request(response):
     return response

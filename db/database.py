@@ -1,12 +1,10 @@
 import pymongo
-from dotenv import load_dotenv 
 import os
 
 class DB(object):
 
     @staticmethod
     def init():
-        load_dotenv()
         DB.DATABASE = ""
         try:
             client = pymongo.MongoClient(os.environ.get('MONGO_URI'))
@@ -19,7 +17,8 @@ class DB(object):
     def insert(collection, data):
        result = DB.DATABASE[collection].insert(data)
        return result
-    
-    def distint_lipstick():
-       result = DB.DATABASE["Lipstick"].find({}).distinct("brand")
-       return result
+
+    @staticmethod
+    def distinct(collection, field, field_distinct):
+        result = DB.DATABASE[collection].find(field).distinct(field_distinct)
+        return result
