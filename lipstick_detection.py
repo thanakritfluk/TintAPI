@@ -74,12 +74,15 @@ def get_dominant(image):
 def load_color(dir,list):
     count = 0
     for sub_dir in os.listdir(dir):  
-        img_dir = pjoin(dir, sub_dir)  
-        image = Image.open(img_dir)
-        image = image.convert('RGB')
-        dmc= get_dominant(image)
-        list.append(dmc)
-        count = count+1
+        if sub_dir == 'output.txt':
+            continue
+        else:
+            img_dir = pjoin(dir, sub_dir)  
+            image = Image.open(img_dir)
+            image = image.convert('RGB')
+            dmc= get_dominant(image)
+            list.append(dmc)
+            count = count+1
     return count
 
 def get_mean_color(count,color_list):
