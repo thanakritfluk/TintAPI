@@ -100,6 +100,7 @@ def find_mean_color():
     return mean_color
 
 def get_lipstick (mean_color, brand_list):
+    # number = 0
     similar_lipstick = [] # for append similar lipstick
     # TODO: operate data from database or whatever which need all of lipstick
     # TODO: Compare color call function: compare_delta_e
@@ -111,10 +112,13 @@ def get_lipstick (mean_color, brand_list):
         for serie in lipstick_list:
             # print(serie_name,"Serie have color",serie['product_colors'])
             for color in serie['product_colors']:
+            #    number += 1
                rgb_color = ImageColor.getcolor(color['hex_value'], "RGB")
                compare_result = compare_delta_e(mean_color, rgb_color)
-               if(compare_result <= 20):
+               if(compare_result <= 10):
                     similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':rgb_color, 'deltaE':compare_result})
+    # print("All lipstick count =", number)
+    # print("Number prediction =", len(similar_lipstick))
     return similar_lipstick
 
 def predict_lipstick_color(ref_img):
