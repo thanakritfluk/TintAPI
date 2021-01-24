@@ -2,7 +2,7 @@ from flask import Flask, request
 from models.lipstick import Lipstick
 from lipstick_detection import predict_lipstick_color
 from db.database import DB
-from flask import jsonify
+from utils.json_encode import JSONEncoder
 # app reference
 app = Flask(__name__)
 
@@ -41,8 +41,8 @@ def predict_lipstick():
     ref_face = request.files['ref_face']
     if ref_face.filename == '':
         return {"detail": "Invalid file or filename missing"}, 400
-    predict_lipstick_color(ref_face)
-    return "Success"
+    result = predict_lipstick_color(ref_face)
+    return (JSONEncoder().encode(result), 200)
 
 # This is POST method which stores foundation.
 @app.route('/api/foundation', methods=['POST'])

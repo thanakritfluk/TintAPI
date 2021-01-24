@@ -4,9 +4,9 @@ from colormath.color_diff import delta_e_cie2000
 from utils.converter import rgb2lab
 
 # Contain dominant color function ot any function to compare between 2 colors
-def compare_delta_e (mean_color,R,G,B):
+def compare_delta_e (mean_color,RGB_tuple):
     # convert RGB to lab color space for put in an comparison formula which is delta e cie2000
-    lab1 = rgb2lab(R,G,B)
+    lab1 = rgb2lab(RGB_tuple[0],RGB_tuple[1],RGB_tuple[2])
     lab2 = rgb2lab(mean_color[0], mean_color[1] , mean_color[2])
 
     # create color from lab value
