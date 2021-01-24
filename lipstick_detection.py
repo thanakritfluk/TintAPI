@@ -11,10 +11,10 @@ from detector import face_detect
 # Contain all lipstick detect function
 
 
-def get_dominant(img):
+def get_dominant(image):
     max_score = 0.0
     dmc = None #dmc stand for dominant color
-    for count,(r,g,b) in img.getColor(img.size[0]*img.size[1]):
+    for count,(r,g,b) in image.getColor(image.size[0]*image.size[1]):
         # convert rgb to hsv
         saturation = colorsys.rgb_to_hsv(r/255.0, g/255.0, b/255.0)[1]
         # calculate y from yuv, y is represent the brightness or luminance of that pixels
@@ -103,6 +103,8 @@ def predict_lipstick_color(ref_img):
     data =  face_detect(ref_img)
     lip_np_pos = detect_mouth_np_array(data)
     crop(data[1],lip_np_pos)
+    meancolor = find_mean_color()
+    print(meancolor)
 
 def get_lipstick (mean_color):
     similar_lipstick = [] # for append similar lipstick
@@ -110,8 +112,3 @@ def get_lipstick (mean_color):
     # TODO: Compare color call function: compare_delta_e
     # TODO: If delta_e is in range [0,20] add to similar_lipstick
     return similar_lipstick
-
-
-# if __name__ == "__main__":
-#     img = cv2.imread("../img.jpg")
-#     print(face_detect(img))
