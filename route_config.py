@@ -2,7 +2,7 @@ from flask import Flask, request
 from models.lipstick import Lipstick
 from lipstick_detection import predict_lipstick_color
 from db.database import DB
-# from detector import face_detect
+from flask import jsonify
 # app reference
 app = Flask(__name__)
 
@@ -24,6 +24,15 @@ def get_lipstick_brand():
     print("All brand =",brand)
     return("Success",200)
 
+@app.route('/api/lipstick/brand/list')
+def get_lipstick_brand_list():
+    brand_name = request.args['brand']
+    lst = Lipstick.find_lipstick_by_brand(brand_name)
+    for i in  lst:
+        print(i)
+        print()
+    return("Return list of lipstick brand",200)
+
 @app.route('/api/prediction/lipstick', methods=['POST'])
 def predict_lipstick():
     # check if the post request has the file part
@@ -34,13 +43,6 @@ def predict_lipstick():
         return {"detail": "Invalid file or filename missing"}, 400
     predict_lipstick_color(ref_face)
     return "Success"
-
-
-# This method returns lipstick
-@app.route('/api/lipstick')
-def get_lipstick_list():
-    return "Lipstick list[GET]"
-
 
 # This is POST method which stores foundation.
 @app.route('/api/foundation', methods=['POST'])

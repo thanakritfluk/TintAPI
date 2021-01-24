@@ -12,7 +12,12 @@ class DB(object):
             DB.DATABASE = client['Tints']
         except :
             print("Error - Cannot connect to DB")
-        
+
+    @staticmethod
+    def find(collection, filters, field ):
+        result = DB.DATABASE[collection].find(filters,field)
+        return result
+
     @staticmethod
     def insert(collection, data):
        result = DB.DATABASE[collection].insert(data)
