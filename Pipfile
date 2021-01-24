@@ -12,6 +12,7 @@ pillow = "==8.1.0"
 dlib = "==19.21.1"
 pymongo = {extras = ["srv"], version = "*"}
 python-dotenv = "*"
+colormath = "==3.0.0"
 
 [dev-packages]
 

@@ -16,3 +16,6 @@ Backend api for Tints progressive web application
 > pipenv install
 
 > flask run
+
+## To freeze lib to requirement.txt
+> pipenv lock -r > requirements.txt

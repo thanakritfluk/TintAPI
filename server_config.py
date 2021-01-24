@@ -1,9 +1,13 @@
 import os
 from route_config import *
 from db.database import DB
+from dotenv import load_dotenv 
 
+load_dotenv()
 app.debug = True
 host = os.environ.get('IP', '0.0.0.0')
 port = int(os.environ.get('PORT', 8080))
 DB.init()
-app.run(host=host, port=port)
+
+if __name__ == "__main__":
+    app.run(host=host, port=port)
