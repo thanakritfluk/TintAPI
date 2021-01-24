@@ -27,7 +27,7 @@ def detect_mouth_np_array(detect):
                 cv2.circle(detect[1], pt_pos, 2, (255, 0, 0), 1)
                 np_pos[i-56][0] = pt.x
                 np_pos[i-56][1] = pt.y
-    cv2.imwrite("./image/input/draw_lip.jpg", detect[1])    
+    # cv2.imwrite("./image/input/draw_lip.jpg", detect[1])    
     return np_pos
 
 def crop(source,pos):
@@ -114,7 +114,7 @@ def get_lipstick (mean_color, brand_list):
                rgb_color = ImageColor.getcolor(color['hex_value'], "RGB")
                compare_result = compare_delta_e(mean_color, rgb_color)
                if(compare_result <= 20):
-                    similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':rgb_color})
+                    similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':rgb_color, 'deltaE':compare_result})
     return similar_lipstick
 
 def predict_lipstick_color(ref_img):

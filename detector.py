@@ -17,7 +17,7 @@ def face_detect(img):
     for a in rectangle_position:
         cv2.rectangle(img, (a.left(), a.top()),
                       (a.right(), a.bottom()), (204, 0, 204))
-    cv2.imwrite("./image/input/draw_rectangle.jpg", img)
+    # cv2.imwrite("./image/input/draw_rectangle.jpg", img)
     return rectangle_position, img, grayImg
 
 
