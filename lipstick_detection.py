@@ -105,17 +105,11 @@ def predict_lipstick_color(ref_img):
     crop(data[1],lip_np_pos)
 
 def get_lipstick (mean_color):
+    similar_lipstick = [] # for append similar lipstick
     # TODO: operate data from database or whatever which need all of lipstick
-    sum = 0 # TODO: sum = amount of color in database
-    RGB_array = np.zeros((sum,3), dtype=int) #TODO: in RGB array must contain an [R G B] color separately
-    DELTA_E_temp = compare_delta_e(mean_color,RGB_array)
-    # sort index of delta_e by delta e value ASC
-    result=sorted(range(len(DELTA_E_temp)), key=lambda k: DELTA_E_temp[k])
-    top_three = []
-    # append top 3 lipstick that has less difference
-    for i in range(3):
-        top_three.append(i) # TODO: add from lipsticl list
-    return top_three
+    # TODO: Compare color call function: compare_delta_e
+    # TODO: If delta_e is in range [0,20] add to similar_lipstick
+    return similar_lipstick
 
 
 # if __name__ == "__main__":
