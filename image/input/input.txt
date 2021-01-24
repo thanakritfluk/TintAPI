@@ -1,0 +1,1 @@
+# Contain input image for process
