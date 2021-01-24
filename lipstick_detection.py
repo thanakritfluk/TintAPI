@@ -3,6 +3,7 @@ import os
 import dlib
 import numpy as np
 import colorsys
+# import getcolor
 import PIL.Image as Image
 from utils.color_similarity import compare_delta_e
 from os.path import join as pjoin
@@ -14,7 +15,7 @@ from detector import face_detect
 def get_dominant(image):
     max_score = 0.0
     dmc = None #dmc stand for dominant color
-    for count,(r,g,b) in image.getColor(image.size[0]*image.size[1]):
+    for count,(r,g,b) in image.getcolors(image.size[0]*image.size[1]):
         # convert rgb to hsv
         saturation = colorsys.rgb_to_hsv(r/255.0, g/255.0, b/255.0)[1]
         # calculate y from yuv, y is represent the brightness or luminance of that pixels
@@ -57,7 +58,7 @@ def load_color(dir,list):
         img_dir = pjoin(dir, sub_dir)  
         image = Image.open(img_dir)
         image = image.convert('RGB')
-        dmc=get_dominant(image)
+        dmc= get_dominant(image)
         list.append(dmc)
         count = count+1
     return count
@@ -65,7 +66,7 @@ def load_color(dir,list):
 def get_mean_color(count,color_list):
     Mean_R=Mean_G=Mean_B=0
     for i in range(count):
-        tuple=list[i]
+        tuple=color_list[i]
         Mean_R+=tuple[0]
         Mean_G+=tuple[1]
         Mean_B+=tuple[2]
