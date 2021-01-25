@@ -115,7 +115,7 @@ def get_lipstick (mean_color, brand_list):
                rgb_color = ImageColor.getcolor(color['hex_value'], "RGB")
                str_rgb_color = str(rgb_color)
                compare_result = compare_delta_e(mean_color, rgb_color)
-               if(compare_result <= 10):
+               if(compare_result <= 5):
                     similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result})
     return similar_lipstick
 
