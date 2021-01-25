@@ -5,7 +5,7 @@ import numpy as np
 
 # Detect face position return array face array
 def face_detect(img):
-    img = cv2.imdecode(np.fromstring(img.read(), np.uint8), cv2.IMREAD_UNCHANGED)
+    img = cv2.imdecode(np.fromstring(img.read(), np.uint8), cv2.IMREAD_COLOR)
     # print("Read image array =", img)
     image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     grayImg = cv2.equalizeHist(image)
