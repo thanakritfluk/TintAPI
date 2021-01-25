@@ -1,5 +1,5 @@
 import datetime
-from db.database import DB
+from src.tints.db.database import DB
 
 class Lipstick(object):
     def __init__(self, name, color, price):

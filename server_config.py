@@ -1,7 +1,9 @@
 import os
-from route_config import *
-from db.database import DB
+from src.tints.route_config import *
+from src.tints.db.database import DB
 from dotenv import load_dotenv 
+
+
 
 load_dotenv()
 app.debug = True
