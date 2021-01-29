@@ -9,7 +9,7 @@ from src.tints.utils.color_similarity import compare_delta_e
 from os.path import join as pjoin
 from src.tints.cv.detector import face_detect
 from src.tints.models.lipstick import Lipstick
-from src.tints.settings import APP_INPUT,APP_OUTPUT,SHAPE_68_PATH
+from src.tints.settings import APP_INPUT,APP_OUTPUT,SHAPE_68_PATH, COLOR_COMPARE_VAL
 
 # Contain all lipstick detect function
 
@@ -115,8 +115,8 @@ def get_lipstick (mean_color, brand_list):
                rgb_color = ImageColor.getcolor(color['hex_value'], "RGB")
                str_rgb_color = str(rgb_color)
                compare_result = compare_delta_e(mean_color, rgb_color)
-               if(compare_result <= 5):
-                    similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result})
+               if(compare_result <= COLOR_COMPARE_VAL):
+                    similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': serie['api_featured_image']})
     return similar_lipstick
 
 def predict_lipstick_color(ref_img):
