@@ -5,17 +5,18 @@ import numpy as np
 import colorsys
 import PIL.Image as Image
 from PIL import ImageColor
-from utils.color_similarity import compare_delta_e
+from src.tints.utils.color_similarity import compare_delta_e
 from os.path import join as pjoin
-from detector import face_detect
-from models.lipstick import Lipstick
+from src.tints.cv.detector import face_detect
+from src.tints.models.lipstick import Lipstick
+from src.tints.settings import APP_INPUT,APP_OUTPUT,SHAPE_68_PATH, COLOR_COMPARE_VAL
 
 # Contain all lipstick detect function
 
 def detect_mouth_np_array(detect):
     np_pos = np.zeros((3, 2), dtype=int)
     # Define feature predictor
-    predictor = dlib.shape_predictor('./shape_predictor_68_face_landmarks.dat')
+    predictor = dlib.shape_predictor(SHAPE_68_PATH)
     for index, face in enumerate(detect[0]):
         shape = predictor(detect[2], face)
         for i, pt in enumerate(shape.parts()):
@@ -38,7 +39,7 @@ def crop(source,pos):
       d=abs(x2-x1)
       region = source[(int)(y1 - d * 0.75) :y2, x1:x2]
       # save the image
-      cv2.imwrite("./image/output/Mouth1.jpg", region)
+      cv2.imwrite(pjoin( APP_OUTPUT,"Mouth1.jpg"), region)
       
       x1=pos[1][0]
       y1=pos[1][1]
@@ -47,7 +48,7 @@ def crop(source,pos):
       d=abs(x1-x2)
       region = source[y1 - d :y2, x1:x2]
       # save the image
-      cv2.imwrite("./image/output/Mouth2.jpg", region)
+      cv2.imwrite(pjoin( APP_OUTPUT,"Mouth2.jpg"), region)
 
 def get_dominant(image):
     max_score = 0.0
@@ -97,17 +98,13 @@ def get_mean_color(count,color_list):
 
 def find_mean_color():
     color_list = []
-    img_dir = "./image/output"
-    count = load_color(img_dir,color_list)
+    # img_dir = "./image/output"
+    count = load_color(APP_OUTPUT,color_list)
     mean_color = get_mean_color(count,color_list)
     return mean_color
 
 def get_lipstick (mean_color, brand_list):
-    # number = 0
     similar_lipstick = [] # for append similar lipstick
-    # TODO: operate data from database or whatever which need all of lipstick
-    # TODO: Compare color call function: compare_delta_e
-    # TODO: If delta_e is in range [0,20] add to similar_lipstick
     for brand_name in brand_list:
         lipstick_list = Lipstick.find_lipstick_by_brand(brand_name)
         # series_len = len(lipstick_list)
@@ -115,14 +112,11 @@ def get_lipstick (mean_color, brand_list):
         for serie in lipstick_list:
             # print(serie_name,"Serie have color",serie['product_colors'])
             for color in serie['product_colors']:
-            #    number += 1
                rgb_color = ImageColor.getcolor(color['hex_value'], "RGB")
                str_rgb_color = str(rgb_color)
                compare_result = compare_delta_e(mean_color, rgb_color)
-               if(compare_result <= 10):
-                    similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result})
-    # print("All lipstick count =", number)
-    # print("Number prediction =", len(similar_lipstick))
+               if(compare_result <= COLOR_COMPARE_VAL):
+                    similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': serie['api_featured_image']})
     return similar_lipstick
 
 def predict_lipstick_color(ref_img):

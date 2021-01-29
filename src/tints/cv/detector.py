@@ -1,7 +1,8 @@
 import cv2
 import dlib
 import numpy as np
-
+from src.tints.settings import APP_INPUT
+import os
 
 # Detect face position return array face array
 def face_detect(img):
@@ -13,7 +14,7 @@ def face_detect(img):
     detector = dlib.get_frontal_face_detector()
     # Use detector detect face position
     rectangle_position = detector(img, 1)
-    cv2.imwrite("./image/input/source.jpg", img)
+    cv2.imwrite(os.path.join(APP_INPUT, "source.jpg" ),img)
     for a in rectangle_position:
         cv2.rectangle(img, (a.left(), a.top()),
                       (a.right(), a.bottom()), (204, 0, 204))

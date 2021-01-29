@@ -1,7 +1,7 @@
 import numpy as np
 from colormath.color_objects import LabColor
 from colormath.color_diff import delta_e_cie2000
-from utils.converter import rgb2lab
+from src.tints.utils.converter import rgb2lab
 
 # Contain dominant color function ot any function to compare between 2 colors
 def compare_delta_e (mean_color,RGB_tuple):
