@@ -1,6 +1,7 @@
 import cv2
 import dlib
 import numpy as np
+import colorsys
 from PIL import ImageColor
 from src.tints.utils.color import compare_delta_e,load_color, get_mean_color
 from os.path import join as pjoin
@@ -54,6 +55,17 @@ def find_mean_color():
     # img_dir = "./image/output"
     count = load_color(APP_OUTPUT,color_list)
     mean_color = get_mean_color(count,color_list)
+    hsv_mean = colorsys.rgb_to_hsv(mean_color[0]/255.0, mean_color[1]/255.0, mean_color[2]/255.0)
+    hsv_temp = tuple([100.0*x for x in hsv_mean])
+    if hsv_temp[2] < 30:
+        h = (hsv_temp[0]+20)
+        s = (hsv_temp[1]+20)
+        v = (hsv_temp[2]+20)
+        print("equalized hsv:",h,s,v)
+        hsv_converted = (h,s,v)
+        hsv_converted = tuple([x/100.0 for x in hsv_converted])
+        print("converted hsv:",hsv_converted)
+        mean_color = tuple(round(i * 255) for i in colorsys.hsv_to_rgb(hsv_converted[0],hsv_converted[1],hsv_converted[2]))
     return mean_color
 
 def get_lipstick (mean_color, brand_list):
