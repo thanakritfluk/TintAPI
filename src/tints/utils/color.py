@@ -6,6 +6,7 @@ import colorsys
 from colormath.color_objects import LabColor
 from colormath.color_diff import delta_e_cie2000
 from src.tints.utils.converter import rgb2lab
+from colorthief import ColorThief
 
 # Contain dominant color function ot any function to compare between 2 colors
 def compare_delta_e (mean_color,RGB_tuple):
@@ -32,7 +33,7 @@ def load_color(dir,list):
             img_dir = pjoin(dir, sub_dir)  
             image = Image.open(img_dir)
             image = image.convert('RGB')
-            dmc= get_dominant(image)
+            dmc= get_dominant_color_thief(image,img_dir)
             list.append(dmc)
             count = count+1
     return count
@@ -49,7 +50,7 @@ def get_mean_color(count,color_list):
 
 # Dominant color in image
 # Method 1 play with COLOR FORMAT
-def get_dominant(image):
+def get_dominant(image, image_path):
     max_score = 0.0
     dmc = None #dmc stand for dominant color
     for count,(r,g,b) in image.getcolors(image.size[0]*image.size[1]):
@@ -71,4 +72,12 @@ def get_dominant(image):
             dmc = (r,b,g)
     return dmc
 
-# def get_dominant_color_thief():
+def get_dominant_color_thief(image, image_path):
+    color_thief = ColorThief(image_path)
+    # get the dominant color
+    dominant_color = color_thief.get_color(quality=1)
+    print(dominant_color)
+    # build a color palette
+    palette = color_thief.get_palette(color_count=3)
+    print(palette)
+    return dominant_color

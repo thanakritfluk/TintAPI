@@ -72,7 +72,7 @@ def get_lipstick (mean_color, brand_list):
                     similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': serie['api_featured_image']})
     return similar_lipstick
 
-def predict_lipstick_color(ref_img):
+def predict_lipstick_color(ref_img):    
     data =  face_detect(ref_img)
     lip_np_pos = detect_mouth_np_array(data)
     # crop(data[1],lip_np_pos)
