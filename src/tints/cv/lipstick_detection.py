@@ -30,7 +30,7 @@ def detect_mouth_np_array(detect):
     predictor = dlib.shape_predictor(SHAPE_68_PATH)
     lip_point = []
     lanmark_img = np.copy(detect[1])
-    for index, face in enumerate(detect[0]):
+    for index, face in enumerate(detect[0],0):
         shape = predictor(detect[2], face)
         for i, pt in enumerate(shape.parts()):
             pt_pos = (pt.x, pt.y)
