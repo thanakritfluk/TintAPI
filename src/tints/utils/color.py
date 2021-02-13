@@ -7,6 +7,7 @@ from colormath.color_objects import LabColor
 from colormath.color_diff import delta_e_cie2000
 from src.tints.utils.converter import rgb2lab
 from colorthief import ColorThief
+from src.tints.utils.kmean import get_colors
 
 # Contain dominant color function ot any function to compare between 2 colors
 def compare_delta_e (mean_color,RGB_tuple):
@@ -33,7 +34,10 @@ def load_color(dir,list):
             img_dir = pjoin(dir, sub_dir)  
             image = Image.open(img_dir)
             image = image.convert('RGB')
-            dmc= get_dominant_color_thief(image,img_dir)
+            # By color thief
+            # dmc= get_dominant_color_thief(image,img_dir)
+            # By kmean
+            dmc= get_dominant_color_kmean(image,img_dir)
             list.append(dmc)
             count = count+1
     return count
@@ -72,6 +76,7 @@ def get_dominant(image, image_path):
             dmc = (r,b,g)
     return dmc
 
+# Method 2 using lib color-thief implement of median cut
 def get_dominant_color_thief(image, image_path):
     color_thief = ColorThief(image_path)
     # get the dominant color
@@ -80,4 +85,9 @@ def get_dominant_color_thief(image, image_path):
     # build a color palette
     palette = color_thief.get_palette(color_count=3)
     print(palette)
+    return dominant_color
+
+# Method 3 using K-mean 5 platte
+def get_dominant_color_kmean(image, image_path):
+    dominant_color = get_colors(image_path)
     return dominant_color
