@@ -86,8 +86,7 @@ def get_points(image_path):
   points = []
   for count, color in img.getcolors(w * h):
     for _ in range(count):
-      points.append(Point(color))
-    
+      points.append(Point(color)) 
   return points
 
 def rgb_to_hex(rgb):
@@ -99,8 +98,8 @@ def hex_to_rgb(hex_list):
         rgb_list.append(ImageColor.getcolor(i, "RGB"))
     return rgb_list
 
-def get_colors(filename, n_colors=NUMBER_K):
-  points = get_points(filename)
+def get_colors(image_path, n_colors=NUMBER_K):
+  points = get_points(image_path)
   clusters = KMeans(n_clusters=n_colors).fit(points)
   clusters.sort(key=lambda c: len(c.points), reverse = True)
   rgbs = [map(int, c.center.coordinates) for c in clusters]
@@ -108,4 +107,4 @@ def get_colors(filename, n_colors=NUMBER_K):
   print("Hex Kmean 5 n =", hex_list)
   rgb_list = hex_to_rgb(hex_list)
   print("RGB Kmean 5 n =", rgb_list)
-  return rgb_list[RETURN_INDEX]
+  return rgb_list

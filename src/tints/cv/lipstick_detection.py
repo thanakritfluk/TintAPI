@@ -3,11 +3,11 @@ import dlib
 import numpy as np
 import colorsys
 from PIL import ImageColor
-from src.tints.utils.color import compare_delta_e,load_color, get_mean_color
+from src.tints.utils.color import compare_delta_e,get_dominant_color
 from os.path import join as pjoin
 from src.tints.cv.detector import face_detect
 from src.tints.models.lipstick import Lipstick
-from src.tints.settings import APP_INPUT,APP_OUTPUT,SHAPE_68_PATH, COLOR_COMPARE_VAL
+from src.tints.settings import APP_INPUT,APP_OUTPUT,SHAPE_68_PATH, COLOR_COMPARE_VAL, METHOD_NUM
 
 # Contain all lipstick detect function
 
@@ -45,28 +45,13 @@ def detect_mouth_np_array(detect):
     cv2.imwrite(pjoin( APP_INPUT,"LanmarkPoint.jpg"), lanmark_img)    
     lip_point = np.array(lip_point)
     crop_lip = createBox(detect[1], lip_point[0:len(lip_point)+1])
-    cv2.imwrite(pjoin( APP_OUTPUT,"LipArea.jpg"), crop_lip)    
-    return np_pos
+    cv2.imwrite(pjoin( APP_OUTPUT,"LipArea.jpg"), crop_lip)
 
 
-def find_mean_color():
-    color_list = []
-    count = load_color(APP_OUTPUT,color_list)
-    mean_color = get_mean_color(count,color_list)
+def find_dominant_color():
+    dominant_list = get_dominant_color(METHOD_NUM,APP_OUTPUT)
+    return dominant_list
 
-    # hsv_mean = colorsys.rgb_to_hsv(mean_color[0]/255.0, mean_color[1]/255.0, mean_color[2]/255.0)
-    # hsv_temp = tuple([100.0*x for x in hsv_mean])
-    # if hsv_temp[2] < 30:
-    #     h = (hsv_temp[0]+20)
-    #     s = (hsv_temp[1]+20)
-    #     v = (hsv_temp[2]+20)
-    #     print("equalized hsv:",h,s,v)
-    #     hsv_converted = (h,s,v)
-    #     hsv_converted = tuple([x/100.0 for x in hsv_converted])
-    #     print("converted hsv:",hsv_converted)
-    #     mean_color = tuple(round(i * 255) for i in colorsys.hsv_to_rgb(hsv_converted[0],hsv_converted[1],hsv_converted[2]))
-    
-    return mean_color
 
 def print_result(number, lip_list):
     print()
@@ -78,17 +63,21 @@ def print_result(number, lip_list):
             print("Brand = {}, Color name = {}, RGB = {}, DeltaE = {}".format(lip_list[i]["brand"],lip_list[i]["color_name"],lip_list[i]["rgb_value"], lip_list[i]["deltaE"]))
     print()
 
-def get_lipstick (mean_color, brand_list):
+def get_lipstick (dominant_color_list, brand_list):
     similar_lipstick = [] # for append similar lipstick
-    for brand_name in brand_list:
-        lipstick_list = Lipstick.find_lipstick_by_brand(brand_name)
-        for serie in lipstick_list:
-            for color in serie['product_colors']:
-               rgb_color = ImageColor.getcolor(color['hex_value'], "RGB")
-               str_rgb_color = str(rgb_color)
-               compare_result = compare_delta_e(mean_color, rgb_color)
-               if(compare_result <= COLOR_COMPARE_VAL):
-                    similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': serie['api_featured_image']})
+    for dominant_color in dominant_color_list:
+        for brand_name in brand_list:
+            lipstick_list = Lipstick.find_lipstick_by_brand(brand_name)
+            for serie in lipstick_list:
+                for color in serie['product_colors']:
+                    rgb_color = ImageColor.getcolor(color['hex_value'], "RGB")
+                    str_rgb_color = str(rgb_color)
+                    # Compare using delta_e
+                    compare_result = compare_delta_e(dominant_color, rgb_color)
+                    if(compare_result <= COLOR_COMPARE_VAL):
+                            similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': serie['api_featured_image']})
+        if not similar_lipstick:
+            break
     similar_lipstick.sort(key=lambda x: x.get('deltaE'))
     # Print for check return lip color easeier
     print_result(5,similar_lipstick)
@@ -96,12 +85,11 @@ def get_lipstick (mean_color, brand_list):
 
 def predict_lipstick_color(ref_img):    
     data =  face_detect(ref_img)
-    lip_np_pos = detect_mouth_np_array(data)
-    meancolor = find_mean_color()
-    
-    print("Mean color=",meancolor)
+    detect_mouth_np_array(data)
+    dominant_color_list = find_dominant_color()
+    print("Dominant color list=",dominant_color_list)
     brand_list = Lipstick.distinct_brand()
-    return get_lipstick(meancolor, brand_list)
+    return get_lipstick(dominant_color_list, brand_list)
 
 # if __name__ == "__main__":
 #     predict_lipstick_color()

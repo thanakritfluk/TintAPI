@@ -8,13 +8,13 @@ from colormath.color_diff import delta_e_cie2000
 from src.tints.utils.converter import rgb2lab
 from colorthief import ColorThief
 from src.tints.utils.kmean import get_colors
+from src.tints.settings import BLACK_THRESHOLD
 
 # Contain dominant color function ot any function to compare between 2 colors
 def compare_delta_e (mean_color,RGB_tuple):
     # convert RGB to lab color space for put in an comparison formula which is delta e cie2000
     lab1 = rgb2lab(RGB_tuple[0],RGB_tuple[1],RGB_tuple[2])
     lab2 = rgb2lab(mean_color[0], mean_color[1] , mean_color[2])
-
     # create color from lab value
     # Reference color.
     color1 = LabColor(lab_l=lab1[0], lab_a=lab1[1], lab_b=lab1[2])
@@ -24,9 +24,17 @@ def compare_delta_e (mean_color,RGB_tuple):
     delta_e = delta_e_cie2000(color1, color2, Kl=1, Kc=1, Kh=1)
     return float(format(delta_e,".3f"))
 
-# Mean of the color in crop image
-def load_color(dir,list):
-    count = 0
+
+def delete_black_color(color_list):
+    new_color_list= []
+    for i in color_list:
+        h, s, v = colorsys.rgb_to_hsv(i[0], i[1], i[2])
+        if(v > BLACK_THRESHOLD):
+            new_color_list.append(i)
+    return new_color_list
+    
+
+def load_image(dir):
     for sub_dir in os.listdir(dir):  
         if sub_dir == 'output.txt':
             continue
@@ -34,29 +42,13 @@ def load_color(dir,list):
             img_dir = pjoin(dir, sub_dir)  
             image = Image.open(img_dir)
             image = image.convert('RGB')
-            # By color thief
-            # dmc= get_dominant_color_thief(image,img_dir)
-            # By kmean
-            dmc= get_dominant_color_kmean(image,img_dir)
-            list.append(dmc)
-            count = count+1
-    return count
-
-def get_mean_color(count,color_list):
-    Mean_R=Mean_G=Mean_B=0
-    for i in range(count):
-        tuple=color_list[i]
-        Mean_R+=tuple[0]
-        Mean_G+=tuple[1]
-        Mean_B+=tuple[2]
-    MeanC=((int)(Mean_R/count),(int)(Mean_G/count),(int)(Mean_B/count))
-    return MeanC    
+    return image,img_dir
 
 # Dominant color in image
 # Method 1 play with COLOR FORMAT
-def get_dominant(image, image_path):
+def get_dominant_color_format_compare(image):
     max_score = 0.0
-    dmc = None #dmc stand for dominant color
+    dmc = [] #dmc stand for dominant color
     for count,(r,g,b) in image.getcolors(image.size[0]*image.size[1]):
         # convert rgb to hsv
         saturation = colorsys.rgb_to_hsv(r/255.0, g/255.0, b/255.0)[1]
@@ -73,11 +65,11 @@ def get_dominant(image, image_path):
         
         if score > max_score:
             max_score = score
-            dmc = (r,b,g)
+            dmc.append((r,b,g))
     return dmc
 
 # Method 2 using lib color-thief implement of median cut
-def get_dominant_color_thief(image, image_path):
+def get_dominant_color_thief(image_path):
     color_thief = ColorThief(image_path)
     # get the dominant color
     dominant_color = color_thief.get_color(quality=1)
@@ -88,6 +80,21 @@ def get_dominant_color_thief(image, image_path):
     return dominant_color
 
 # Method 3 using K-mean 5 platte
-def get_dominant_color_kmean(image, image_path):
+def get_dominant_color_kmean(image_path):
     dominant_color = get_colors(image_path)
     return dominant_color
+
+
+def get_dominant_color(method_num, dir_folder):
+    img_info = load_image(dir_folder)
+    dominant_color_list = []
+    if method_num == 0:
+        dominant_color_list =  get_dominant_color_format_compare(img_info[0])
+    elif method_num == 1:
+        dominant_color_list = get_dominant_color_thief(img_info[1])
+    else:
+        print("Using K-mean")
+        dominant_color_list = get_dominant_color_kmean(img_info[1])
+    # Delete black color that is the background of bitwise
+    dominant_color_list = delete_black_color(dominant_color_list)
+    return dominant_color_list

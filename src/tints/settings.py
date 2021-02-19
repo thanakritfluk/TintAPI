@@ -5,6 +5,10 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_
 APP_INPUT = os.path.join(APP_ROOT, './image/input')
 APP_OUTPUT = os.path.join(APP_ROOT, './image/output')
 SHAPE_68_PATH = os.path.join(APP_ROOT, './cv/shape_predictor_68_face_landmarks.dat')
+
+# Lipstick settings
+METHOD_NUM = 2
+BLACK_THRESHOLD = 20
 COLOR_COMPARE_VAL = 15
 
 # Kmean settings
