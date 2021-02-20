@@ -75,7 +75,7 @@ def get_lipstick (dominant_color_list, brand_list):
                     # Compare using delta_e
                     compare_result = compare_delta_e(dominant_color, rgb_color)
                     if(compare_result <= COLOR_COMPARE_VAL):
-                            similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': serie['api_featured_image']})
+                            similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'serie':serie['name'],'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': serie['api_featured_image']})
         if not similar_lipstick:
             break
     similar_lipstick.sort(key=lambda x: x.get('deltaE'))
