@@ -10,6 +10,7 @@ SHAPE_68_PATH = os.path.join(APP_ROOT, './cv/shape_predictor_68_face_landmarks.d
 METHOD_NUM = 2
 BLACK_THRESHOLD = 20
 COLOR_COMPARE_VAL = 15
+RETURN_SIZE = 100
 
 # Kmean settings
 NUMBER_K = 5

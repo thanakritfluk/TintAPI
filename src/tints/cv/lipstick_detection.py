@@ -7,7 +7,7 @@ from src.tints.utils.color import compare_delta_e,get_dominant_color
 from os.path import join as pjoin
 from src.tints.cv.detector import face_detect
 from src.tints.models.lipstick import Lipstick
-from src.tints.settings import APP_INPUT,APP_OUTPUT,SHAPE_68_PATH, COLOR_COMPARE_VAL, METHOD_NUM
+from src.tints.settings import APP_INPUT,APP_OUTPUT,SHAPE_68_PATH, COLOR_COMPARE_VAL, METHOD_NUM, RETURN_SIZE
 
 # Contain all lipstick detect function
 
@@ -78,6 +78,10 @@ def get_lipstick (dominant_color_list, brand_list):
                             similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'serie':serie['name'],'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': serie['api_featured_image']})
         if not similar_lipstick:
             break
+    if len(similar_lipstick) >= RETURN_SIZE:
+        similar_lipstick = similar_lipstick[:RETURN_SIZE]
+    else:
+        similar_lipstick = similar_lipstick[:len(similar_lipstick)]
     similar_lipstick.sort(key=lambda x: x.get('deltaE'))
     # Print for check return lip color easeier
     print_result(5,similar_lipstick)
