@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
 from src.tints.models.lipstick import Lipstick
-from src.tints.cv.lipstick_detection import predict_lipstick_color
+from src.tints.cv.detector import color_detection
 from src.tints.db.database import DB
 from src.tints.utils.json_encode import JSONEncoder
 # app reference
@@ -27,13 +27,13 @@ def get_lipstick_brand():
     brand = Lipstick.distinct_brand()
     return(JSONEncoder().encode(brand), 200)
 
-@app.route('/api/lipstick/list/from/brand/')
+@app.route('/api/lipstick/list/from/brand')
 def get_lipstick_brand_list():
     brand_name = request.args['brand']
     lst = Lipstick.find_lipstick_by_brand(brand_name)
     return(JSONEncoder().encode(lst),200)
 
-@app.route('/api/prediction/lipstick/', methods=['POST'])
+@app.route('/api/color/prediction', methods=['POST'])
 @cross_origin()
 def predict_lipstick():
     # check if the post request has the file part
@@ -42,7 +42,7 @@ def predict_lipstick():
     ref_face = request.files['ref_face']
     if ref_face.filename == '':
         return {"detail": "Invalid file or filename missing"}, 400
-    result = predict_lipstick_color(ref_face)
+    result = color_detection(ref_face,request.form.get('userID'))
     return (JSONEncoder().encode(result), 200)
 
 # This method executes after every API request.

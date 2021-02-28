@@ -1,6 +1,5 @@
 #Contain util convert image fotmat
 
-
 # Method for converting RGB color space to LAB color space
 def rgb2lab(R,G,B):
     # Convert RGB to XYZ

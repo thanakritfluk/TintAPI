@@ -1,57 +1,9 @@
-import cv2
-import dlib
-import numpy as np
-import colorsys
 from PIL import ImageColor
 from src.tints.utils.color import compare_delta_e,get_dominant_color
-from os.path import join as pjoin
-from src.tints.cv.detector import face_detect
 from src.tints.models.lipstick import Lipstick
-from src.tints.settings import APP_INPUT,APP_OUTPUT,SHAPE_68_PATH, COLOR_COMPARE_VAL, METHOD_NUM, RETURN_SIZE
+from src.tints.settings import APP_INPUT,APP_OUTPUT, COLOR_COMPARE_VAL, METHOD_NUM, RETURN_SIZE
 
-# Contain all lipstick detect function
-
-def createBox(img, points, scale=1):
-    mask = np.zeros_like(img)
-    # Our feature
-    mask = cv2.fillPoly(mask, [points], (255,255,255))
-    # cv2.imwrite(pjoin( APP_OUTPUT,"LipMask.jpg"), mask)   
-    img = cv2.bitwise_and(img,mask)
-    # cv2.imwrite(pjoin( APP_OUTPUT,"OnlyLipIMG.jpg"), img)  
-    bbox = cv2.boundingRect(points)
-    x,y,w,h = bbox
-    imgCrop = img[y:y+h, x:x+w]
-    # imgCrop = cv2.resize(imgCrop, (0,0), None, scale, scale)
-    return imgCrop
-
-def detect_mouth_np_array(detect):
-    np_pos = np.zeros((3, 2), dtype=int)
-    # Define feature predictor
-    predictor = dlib.shape_predictor(SHAPE_68_PATH)
-    lip_point = []
-    lanmark_img = np.copy(detect[1])
-    for index, face in enumerate(detect[0],0):
-        shape = predictor(detect[2], face)
-        for i, pt in enumerate(shape.parts()):
-            pt_pos = (pt.x, pt.y)
-            cv2.circle(lanmark_img, pt_pos, 2, (255, 255, 255), 2)
-            if i >= 48 and i <= 67:
-                lip_point.append([pt.x,pt.y])
-                # cv2.circle(detect[1], pt_pos, 2, (255, 0, 0), 1)
-            if i >= 56 and i <= 58:
-                # cv2.circle(detect[1], pt_pos, 2, (255, 0, 0), 1)
-                np_pos[i-56][0] = pt.x
-                np_pos[i-56][1] = pt.y
-    cv2.imwrite(pjoin( APP_INPUT,"LanmarkPoint.jpg"), lanmark_img)    
-    lip_point = np.array(lip_point)
-    crop_lip = createBox(detect[1], lip_point[0:len(lip_point)+1])
-    cv2.imwrite(pjoin( APP_OUTPUT,"LipArea.jpg"), crop_lip)
-
-
-def find_dominant_color():
-    dominant_list = get_dominant_color(METHOD_NUM,APP_OUTPUT)
-    return dominant_list
-
+# Contain all lipstick function
 
 def print_result(number, lip_list):
     print()
@@ -87,10 +39,8 @@ def get_lipstick (dominant_color_list, brand_list):
     print_result(5,similar_lipstick)
     return similar_lipstick
 
-def predict_lipstick_color(ref_img):    
-    data =  face_detect(ref_img)
-    detect_mouth_np_array(data)
-    dominant_color_list = find_dominant_color()
+def predict_lipstick_color(userID):    
+    dominant_color_list = get_dominant_color(APP_OUTPUT,userID)
     print("Dominant color list=",dominant_color_list)
     brand_list = Lipstick.distinct_brand()
     return get_lipstick(dominant_color_list, brand_list)

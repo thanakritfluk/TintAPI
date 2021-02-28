@@ -1,5 +1,6 @@
 from math import sqrt
-from src.tints.settings import RETURN_INDEX, NUMBER_K
+import colorsys
+from src.tints.settings import RETURN_INDEX, NUMBER_K, BLACK_THRESHOLD
 import random
 try:
   import Image
@@ -77,16 +78,23 @@ def euclidean(p, q):
       (p.coordinates[i] - q.coordinates[i]) ** 2 for i in range(n_dim)
   ]))
 
+def is_black_color(color):
+    is_black = False
+    h, s, v = colorsys.rgb_to_hsv(color[0], color[1], color[2])
+    if v <= BLACK_THRESHOLD:
+        is_black = True
+    return is_black
+
 def get_points(image_path):  
   img = Image.open(image_path)
   img.thumbnail((200, 400))
   img = img.convert("RGB")
   w, h = img.size
-  
   points = []
   for count, color in img.getcolors(w * h):
     for _ in range(count):
-      points.append(Point(color)) 
+      if not is_black_color(Point(color).coordinates):
+        points.append(Point(color)) 
   return points
 
 def rgb_to_hex(rgb):
