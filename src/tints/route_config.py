@@ -35,7 +35,7 @@ def get_lipstick_brand_list():
 
 @app.route('/api/color/prediction', methods=['POST'])
 @cross_origin()
-def predict_lipstick():
+def prediction():
     # check if the post request has the file part
     if 'ref_face' not in request.files:
         return {"detail": "No file found"}, 400
