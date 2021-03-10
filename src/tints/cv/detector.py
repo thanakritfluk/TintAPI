@@ -70,7 +70,7 @@ def face_detect(img, userID):
 
 def color_detection(ref_img, userID):
     face_detect(ref_img,userID)
-    predict_lipstick_color(userID)
+    return predict_lipstick_color(userID)
 
 
 
