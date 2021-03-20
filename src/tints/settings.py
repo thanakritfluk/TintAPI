@@ -2,9 +2,9 @@
 import os
 # __file__ refers to the file settings.py 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
-APP_INPUT = os.path.join(APP_ROOT, './image/input')
-APP_OUTPUT = os.path.join(APP_ROOT, './image/output')
-SHAPE_68_PATH = os.path.join(APP_ROOT, './cv/shape_predictor_68_face_landmarks.dat')
+COLOR_PREDICTION_INPUT = os.path.join(APP_ROOT, './image/color_prediction_input')
+COLOR_PREDICTION_OUTPUT = os.path.join(APP_ROOT, './image/color_prediction_output')
+SHAPE_68_PATH = os.path.join(APP_ROOT, './cv/train_model/shape_predictor_68_face_landmarks.dat')
 
 # Lipstick settings
 METHOD_NUM = 2

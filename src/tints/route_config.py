@@ -1,9 +1,10 @@
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
 from src.tints.models.lipstick import Lipstick
-from src.tints.cv.detector import color_detection
+from src.tints.cv.color_prediction.color_predictor import ColorPredictor
 from src.tints.db.database import DB
 from src.tints.utils.json_encode import JSONEncoder
+
 # app reference
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -16,11 +17,11 @@ def before_request():
 
 # Lipstick route path
 
-# @app.route('/api/add/lipstick')
-# def insert_lipstick():
-#     lipstick = Lipstick('FlukLip', '#EBA38B', 500)
-#     insert = lipstick.insert()
-#     return("Success insert id:"+str(insert), 200)
+@app.route('/api/add/lipstick')
+def insert_lipstick():
+    lipstick = Lipstick('FlukLip', '#EBA38B', 500)
+    insert = lipstick.insert()
+    return("Success insert id:"+str(insert), 200)
 
 @app.route('/api/lipstick/brand/list')
 def get_lipstick_brand():
@@ -42,8 +43,13 @@ def prediction():
     ref_face = request.files['ref_face']
     if ref_face.filename == '':
         return {"detail": "Invalid file or filename missing"}, 400
-    result = color_detection(ref_face,request.form.get('userID'))
-    return (JSONEncoder().encode(result), 200)
+    user_id = request.form.get('user_id')
+    color_prediction = ColorPredictor()
+    color_prediction.read_image(ref_face,user_id)
+    predict_result = color_prediction.get_lipstick_predict()
+    return (JSONEncoder().encode(predict_result), 200)
+
+
 
 # This method executes after every API request.
 @app.after_request
