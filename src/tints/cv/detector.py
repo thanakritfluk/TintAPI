@@ -53,7 +53,7 @@ class DetectLandmarks(object):
         return landmarks
 
 
-    def create_box(self,image,output_path,output_name, np_points):
+    def create_box(self, image, output_path, output_name, np_points):
         mask = np.zeros_like(image)
         # Our feature
         mask = cv2.fillPoly(mask, [np_points], (255,255,255))
