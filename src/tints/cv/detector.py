@@ -68,6 +68,14 @@ class DetectLandmarks(object):
         # imgCrop = cv2.resize(imgCrop, (0,0), None, scale, scale)
         # return imgCrop
 
+    def get_cheek_np(self, image):
+        """
+        Return points for cheek as np array in given image
+        """
+        lanmarks = self.get_face_data(image_file=image)
+        np_list = np.concatenate((lanmarks[2],lanmarks[3],lanmarks[4], lanmarks[5],lanmarks[49],lanmarks[29],lanmarks[40]))
+        return np_list
+
 
     def get_lip_np(self, image):
         """

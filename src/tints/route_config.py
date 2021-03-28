@@ -44,10 +44,13 @@ def prediction():
     if ref_face.filename == '':
         return {"detail": "Invalid file or filename missing"}, 400
     user_id = request.form.get('user_id')
-    color_prediction = ColorPredictor()
-    color_prediction.read_image(ref_face,user_id)
-    predict_result = color_prediction.get_lipstick_predict()
-    return (JSONEncoder().encode(predict_result), 200)
+    color_prediction = ColorPredictor(ref_face, user_id)
+
+    result = color_prediction.get_foundation_predict()
+    return (JSONEncoder().encode(result), 200)
+    
+    # predict_result = color_prediction.get_lipstick_predict()
+    # return (JSONEncoder().encode(predict_result), 200)
 
 
 
