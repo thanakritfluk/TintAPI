@@ -38,6 +38,7 @@ class ApplyMakeup(DetectLandmarks):
 
     def __read_image(self, filename):
         """ Read image from path forwarded """
+        print(filename)
         self.image = cv2.imdecode(np.fromstring(
             filename.read(), np.uint8), cv2.IMREAD_COLOR)
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
@@ -100,7 +101,7 @@ class ApplyMakeup(DetectLandmarks):
         cv2.fillPoly(self.image, [points],
                      (self.red_l, self.green_l, self.blue_l))
 
-    def __smoothen_color(self, outer, inner):
+    def __smoothen_color(self, outer, inner, ksize_h, ksize_w):
         """ Smoothens and blends colour applied between a set of outlines. """
         outer_curve = zip(outer[0], outer[1])
         inner_curve = zip(inner[0], inner[1])
@@ -115,7 +116,8 @@ class ApplyMakeup(DetectLandmarks):
         img_base = np.zeros((self.height, self.width))
         cv2.fillConvexPoly(img_base, np.array(
             np.c_[x_points, y_points], dtype='int32'), 1)
-        img_mask = cv2.GaussianBlur(img_base, (81, 81), 0)  # 51,51
+        img_mask = cv2.GaussianBlur(
+            img_base, (ksize_h, ksize_w), 0)  # 51,51 81,81
         img_blur_3d = np.ndarray([self.height, self.width, 3], dtype='float')
         img_blur_3d[:, :, 0] = img_mask
         img_blur_3d[:, :, 1] = img_mask
@@ -171,17 +173,17 @@ class ApplyMakeup(DetectLandmarks):
         lil_curve = self.__draw_curve(lil)
         return uol_curve, uil_curve, lol_curve, lil_curve
 
-    def __fill_color(self, uol_c, uil_c, lol_c, lil_c):
+    def __fill_color(self, uol_c, uil_c, lol_c, lil_c, ksize_h, ksize_w):
         """ Fill colour in lips. """
         self.__fill_lip_lines(uol_c, uil_c)
         self.__fill_lip_lines(lol_c, lil_c)
         self.__add_color(1)
         self.__fill_lip_solid(uol_c, uil_c)
         self.__fill_lip_solid(lol_c, lil_c)
-        self.__smoothen_color(uol_c, uil_c)
-        self.__smoothen_color(lol_c, lil_c)
+        self.__smoothen_color(uol_c, uil_c, ksize_h, ksize_w)
+        self.__smoothen_color(lol_c, lil_c, ksize_h, ksize_w)
 
-    def apply_lipstick(self, filename, rlips, glips, blips):
+    def apply_lipstick(self, filename, rlips, glips, blips, ksize_h, ksize_w):
         """
         Applies lipstick on an input image.
         ___________________________________
@@ -205,11 +207,13 @@ class ApplyMakeup(DetectLandmarks):
         lips_points = [item for sublist in lips for item in sublist]
         uol, uil, lol, lil = self.__get_points_lips(lips_points)
         uol_c, uil_c, lol_c, lil_c = self.__get_curves_lips(uol, uil, lol, lil)
-        self.__fill_color(uol_c, uil_c, lol_c, lil_c)
+        self.__fill_color(uol_c, uil_c, lol_c, lil_c, ksize_h, ksize_w)
         self.im_copy = cv2.cvtColor(self.im_copy, cv2.COLOR_BGR2RGB)
         name = 'color_' + str(self.red_l) + '_' + \
             str(self.green_l) + '_' + str(self.blue_l)
-        file_name = 'lip_output-' + name + '.jpg'
+        # file_name = 'lip_output-' + name + '.jpg'
+        file_name = 'lip_output-{}x{}_{}.jpg'.format(ksize_h, ksize_w, name)
+
         # cv2.imwrite(file_name, self.im_copy)
         cv2.imwrite(os.path.join(SIMULATOR_OUTPUT, file_name), self.im_copy)
         return file_name

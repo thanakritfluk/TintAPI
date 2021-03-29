@@ -1,6 +1,8 @@
 import io
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, jsonify
 from flask_cors import CORS, cross_origin
+from PIL import Image
+from base64 import encodebytes
 from src.tints.models.lipstick import Lipstick
 from src.tints.cv.color_prediction.color_predictor import ColorPredictor
 from src.tints.cv.simulation.apply_makeup import ApplyMakeup
@@ -59,6 +61,15 @@ def prediction():
     return (JSONEncoder().encode(predict_result), 200)
 
 
+def get_response_image(image_path):
+    pil_img = Image.open(image_path, mode='r')  # reads the PIL image
+    byte_arr = io.BytesIO()
+    pil_img.save(byte_arr, format='PNG')  # convert the PIL image to byte array
+    encoded_img = encodebytes(byte_arr.getvalue()).decode(
+        'ascii')  # encode as base64
+    return encoded_img
+
+
 @app.route('/api/simulator/lip', methods=['POST'])
 @cross_origin()
 def simulator_lip():
@@ -66,6 +77,8 @@ def simulator_lip():
     if 'user_image' not in request.files:
         return {"detail": "No file found"}, 400
     user_image = request.files['user_image']
+    user_image_1 = request.files['user_image_1']
+    user_image_2 = request.files['user_image_2']
     if user_image.filename == '':
         return {"detail": "Invalid file or filename missing"}, 400
     user_id = request.form.get('user_id')
@@ -73,14 +86,27 @@ def simulator_lip():
     glip = request.form.get('glip')
     blip = request.form.get('blip')
     apply_makeup = ApplyMakeup()
-    predict_result = apply_makeup.apply_lipstick(user_image, rlip, glip, blip)
-    print(predict_result)
-    return send_from_directory(
-        SIMULATOR_OUTPUT,
-        predict_result,
-        mimetype='image/jpg',
-        as_attachment=True,
-        attachment_filename='lip_output.jpg')
+
+    predict_result_intense = apply_makeup.apply_lipstick(
+        user_image, rlip, glip, blip, 5, 5)
+    predict_result_medium = apply_makeup.apply_lipstick(
+        user_image_1, rlip, glip, blip, 51, 51)
+    predict_result_fade = apply_makeup.apply_lipstick(
+        user_image_2, rlip, glip, blip, 81, 81)
+
+    result = [predict_result_intense,
+              predict_result_medium, predict_result_fade]
+    encoded_img = []
+    for image_path in result:
+        encoded_img.append(get_response_image(
+            '{}/{}'.format(SIMULATOR_OUTPUT, image_path)))
+
+    return (JSONEncoder().encode(encoded_img), 200)
+
+    # return send_from_directory(
+    #     SIMULATOR_OUTPUT,
+    #     predict_result_intense,
+    #     mimetype='image/jpeg')
 
 
 # This method executes after every API request.
