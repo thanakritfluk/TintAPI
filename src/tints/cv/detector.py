@@ -2,7 +2,7 @@ import cv2
 import dlib
 import numpy as np
 from os.path import join as pjoin
-from src.tints.settings import COLOR_PREDICTION_INPUT,COLOR_PREDICTION_OUTPUT,SHAPE_68_PATH
+from src.tints.settings import COLOR_PREDICTION_INPUT,COLOR_PREDICTION_OUTPUT,SHAPE_68_PATH,SAVE_FILE_TYPE
 
 
 PREDICTOR_PATH = SHAPE_68_PATH
@@ -25,9 +25,11 @@ class DetectLandmarks(object):
         try:
             rects = self.detector(image, 1)
             size = len(rects)
+            image = cv2.cvtColor(np.copy(image), cv2.COLOR_BGR2GRAY)
+            grayImg = cv2.equalizeHist(image)
             if size == 0:
                 return None, None
-            return np.matrix([[p.x, p.y] for p in self.predictor(image, rects[0]).parts()])
+            return np.matrix([[p.x, p.y] for p in self.predictor(grayImg, rects[0]).parts()])
         except Exception:
             return None
 
@@ -52,6 +54,16 @@ class DetectLandmarks(object):
             return None
         return landmarks
 
+    def save_localize_lanmark_image(self, image,output_path,output_name):
+        image_copy = np.copy(image)
+        lanmarks = self.get_face_data(image_file=image)
+        for (i,point) in enumerate(lanmarks):
+            x = point[0,0]
+            y = point[0,1]
+            cv2.circle(image_copy,(x,y),1,(0,255,255),-1)
+            cv2.putText(image_copy, "{}".format(i+1), (x,y-2),cv2.FONT_HERSHEY_SIMPLEX,0.6,(0,255,0),2)
+        cv2.imwrite(pjoin(output_path,"".join((output_name,SAVE_FILE_TYPE))) , image_copy)    
+
 
     def create_box(self,image,output_path,output_name, np_points):
         mask = np.zeros_like(image)
@@ -64,7 +76,7 @@ class DetectLandmarks(object):
         x,y,w,h = bbox
         image_crop = image[y: y + h, x: x + w]
         # print("Crop=",image_crop)
-        cv2.imwrite(pjoin( output_path,output_name), image_crop)
+        cv2.imwrite(pjoin( output_path,"".join((output_name,SAVE_FILE_TYPE))), image_crop)
         # imgCrop = cv2.resize(imgCrop, (0,0), None, scale, scale)
         # return imgCrop
 

@@ -8,7 +8,7 @@ from src.tints.models.foundation import Foundation
 from src.tints.models.blush import Blush
 from src.tints.cv.detector import DetectLandmarks
 from src.tints.utils.color import compare_delta_e,get_dominant_color_kmean
-from src.tints.settings import COLOR_PREDICTION_INPUT,COLOR_PREDICTION_OUTPUT, COLOR_COMPARE_VAL, METHOD_NUM, RETURN_SIZE,SKIN_CLUSTER_MODEL_PATH
+from src.tints.settings import COLOR_PREDICTION_INPUT,COLOR_PREDICTION_OUTPUT, COLOR_COMPARE_VAL, METHOD_NUM, RETURN_SIZE,SKIN_CLUSTER_MODEL_PATH, SAVE_FILE_TYPE
 
 SKIN_CLUSTER_MODEL = SKIN_CLUSTER_MODEL_PATH
 
@@ -69,11 +69,11 @@ class ColorPredictor(DetectLandmarks):
 
     def get_lipstick_predict(self):
         lip_np = self.get_lip_np(self.image)
-        LIPAREA_NAME = "".join(("LipArea_",self.user_id,".jpg"))
+        LIPAREA_NAME = "".join(("LipArea_",self.user_id))
         self.create_box(self.image,COLOR_PREDICTION_OUTPUT,LIPAREA_NAME,lip_np)
         # Find lipstick after get crop area
         brand_list = Lipstick.distinct_brand()
-        img_path = pjoin(COLOR_PREDICTION_OUTPUT,LIPAREA_NAME)
+        img_path = pjoin(COLOR_PREDICTION_OUTPUT,"".join((LIPAREA_NAME,SAVE_FILE_TYPE)))
         dominant_color_list = get_dominant_color_kmean(img_path)
         similar_lipstick = [] # for append similar lipstick
         for dominant_color in dominant_color_list:
@@ -101,9 +101,9 @@ class ColorPredictor(DetectLandmarks):
 
     def get_foundation_predict(self):
         cheek_np = self.get_cheek_np(self.image)
-        CHEEK_NAME = "".join(("CheekArea_",self.user_id,".jpg"))
+        CHEEK_NAME = "".join(("CheekArea_",self.user_id))
         self.create_box(self.image, COLOR_PREDICTION_OUTPUT, CHEEK_NAME, cheek_np)
-        img_path = pjoin(COLOR_PREDICTION_OUTPUT,CHEEK_NAME)
+        img_path = pjoin(COLOR_PREDICTION_OUTPUT,"".join((CHEEK_NAME,SAVE_FILE_TYPE)))
         dominant_color_list = get_dominant_color_kmean(img_path)
         similar_foundation = []
         foundation_list = []
@@ -129,6 +129,7 @@ class ColorPredictor(DetectLandmarks):
 
 
     def get_all_prediction(self,blush_color):
+        self.save_localize_lanmark_image(self.image,COLOR_PREDICTION_INPUT,"".join(("Lanmark_",self.user_id)))
         return {"Lipstick":self.get_lipstick_predict(),"Foundation":self.get_foundation_predict(),"Blush":self.get_blush_predict(blush_color)}
         
 
