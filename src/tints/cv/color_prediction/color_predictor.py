@@ -44,6 +44,28 @@ class ColorPredictor(DetectLandmarks):
         result.sort(key=lambda x: x.get('deltaE'))
         return result
 
+    def get_prediction_list(self,similar_list, product_list, dominant_color):
+        for product in product_list:
+            for color in product['product_colors']:
+                if "," in color['hex_value']:
+                    color_list = color['hex_value'].split(",")
+                    for i in color_list:
+                        rgb_color = ImageColor.getcolor(i, "RGB")
+                        str_rgb_color = str(rgb_color)
+                        # Compare using delta_e
+                        compare_result = compare_delta_e(dominant_color, rgb_color)
+                        if(compare_result <= COLOR_COMPARE_VAL):
+                                similar_list.append({'_id':product['_id'],'brand':product['brand'],'serie':product['name'],'price':product['price'],'image_link':product['image_link'],'product_link':product['product_link'],'category':product['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': product['api_featured_image']})
+                else:
+                    rgb_color = ImageColor.getcolor(color['hex_value'], "RGB")
+                    str_rgb_color = str(rgb_color)
+                    # Compare using delta_e
+                    compare_result = compare_delta_e(dominant_color, rgb_color)
+                    if(compare_result <= COLOR_COMPARE_VAL):
+                            similar_list.append({'_id':product['_id'],'brand':product['brand'],'serie':product['name'],'price':product['price'],'image_link':product['image_link'],'product_link':product['product_link'],'category':product['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': product['api_featured_image']})
+        return similar_list
+
+
 
     def get_lipstick_predict(self):
         lip_np = self.get_lip_np(self.image)
@@ -57,14 +79,7 @@ class ColorPredictor(DetectLandmarks):
         for dominant_color in dominant_color_list:
             for brand_name in brand_list:
                 lipstick_list = Lipstick.find_lipstick_by_brand(brand_name)
-                for serie in lipstick_list:
-                    for color in serie['product_colors']:
-                        rgb_color = ImageColor.getcolor(color['hex_value'], "RGB")
-                        str_rgb_color = str(rgb_color)
-                        # Compare using delta_e
-                        compare_result = compare_delta_e(dominant_color, rgb_color)
-                        if(compare_result <= COLOR_COMPARE_VAL):
-                                similar_lipstick.append({'_id':serie['_id'],'brand':brand_name,'serie':serie['name'],'price':serie['price'],'image_link':serie['image_link'],'product_link':serie['product_link'],'category':serie['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': serie['api_featured_image']})
+                similar_lipstick = self.get_prediction_list(similar_lipstick, lipstick_list, dominant_color)
             if similar_lipstick:
                 break
         # Print for check return lip color easeier
@@ -96,13 +111,7 @@ class ColorPredictor(DetectLandmarks):
             skin_cluster = self.get_skin_type_cluster(dominant_color)
             if not foundation_list: 
                 foundation_list = Foundation.get_foundation_by_skin_cluster(skin_cluster)
-            for foundation in foundation_list:
-                rgb_color = ImageColor.getcolor(foundation['product_color']['hex_value'], "RGB")
-                str_rgb_color = str(rgb_color)
-                compare_result = compare_delta_e(dominant_color, rgb_color)
-                print(rgb_color)
-                if(compare_result <= COLOR_COMPARE_VAL):
-                    similar_foundation.append({'_id':foundation['_id'],'brand':foundation['brand'],'serie':foundation['name'],'price':foundation['price'],'price_sign':foundation['price_sign'],'currency':foundation['currency'],'image_link':foundation['image_link'],'product_link':foundation['product_link'],'category':foundation['category'],'color_name':foundation['product_color']['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': foundation['api_featured_image']})
+            similar_foundation = self.get_prediction_list(similar_foundation, foundation_list, dominant_color)
             if similar_foundation:
                 break
         self.print_result(5,similar_foundation)
@@ -113,24 +122,7 @@ class ColorPredictor(DetectLandmarks):
         dominant_color = ImageColor.getcolor(blush_color, "RGB")
         similar_blush = []
         blush_list = Blush.get_all_blush()
-        for product in blush_list:
-            for color in product['product_colors']:
-                if "," in color['hex_value']:
-                    color_list = color['hex_value'].split(",")
-                    for i in color_list:
-                        rgb_color = ImageColor.getcolor(i, "RGB")
-                        str_rgb_color = str(rgb_color)
-                        # Compare using delta_e
-                        compare_result = compare_delta_e(dominant_color, rgb_color)
-                        if(compare_result <= COLOR_COMPARE_VAL):
-                                similar_blush.append({'_id':product['_id'],'brand':product['brand'],'serie':product['name'],'price':product['price'],'image_link':product['image_link'],'product_link':product['product_link'],'category':product['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': product['api_featured_image']})
-                else:
-                    rgb_color = ImageColor.getcolor(color['hex_value'], "RGB")
-                    str_rgb_color = str(rgb_color)
-                    # Compare using delta_e
-                    compare_result = compare_delta_e(dominant_color, rgb_color)
-                    if(compare_result <= COLOR_COMPARE_VAL):
-                            similar_blush.append({'_id':product['_id'],'brand':product['brand'],'serie':product['name'],'price':product['price'],'image_link':product['image_link'],'product_link':product['product_link'],'category':product['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': product['api_featured_image']})
+        similar_blush = self.get_prediction_list(similar_blush, blush_list, dominant_color)
         # Print for check return lip color easeier
         self.print_result(5,similar_blush)
         return self.get_custom_return_size(similar_blush)

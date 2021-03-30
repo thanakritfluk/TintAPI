@@ -18,7 +18,7 @@ class Foundation(object):
         return DB.insert(collection=collection_name, data=self.json())
 
     def get_foundation_by_skin_cluster(skin_cluster):
-        field = {"brand":1,"name":1,"price":1,"price_sign":1,"currency":1, "image_link":1, "product_link":1, "category": 1, "product_color":1, "api_featured_image":1}
+        field = {"brand":1,"name":1,"price":1,"price_sign":1,"currency":1, "image_link":1, "product_link":1, "category": 1, "product_colors":1, "api_featured_image":1}
         if skin_cluster == 0:
             return list(DB.find(collection=LightFoundation, filters={}, field=field))
         elif skin_cluster == 1:
