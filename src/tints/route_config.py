@@ -45,10 +45,12 @@ def prediction():
         return {"detail": "Invalid file or filename missing"}, 400
     user_id = request.form.get('user_id')
     color_prediction = ColorPredictor(ref_face, user_id)
-
-    result = color_prediction.get_foundation_predict()
+    result = color_prediction.get_all_prediction(request.form.get('blush_hex_color'))
     return (JSONEncoder().encode(result), 200)
-    
+    # result = color_prediction.get_blush_predict(request.form.get('blush_hex_color'))
+    # return ("JSONEncoder().encode(result)", 200)
+    # result = color_prediction.get_foundation_predict()
+    # return (JSONEncoder().encode(result), 200)
     # predict_result = color_prediction.get_lipstick_predict()
     # return (JSONEncoder().encode(predict_result), 200)
 

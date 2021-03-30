@@ -10,8 +10,8 @@ SKIN_CLUSTER_MODEL_PATH = os.path.join(APP_ROOT,'./cv/train_model/skin_tone_mode
 # Lipstick settings
 METHOD_NUM = 2
 BLACK_THRESHOLD = 20
-COLOR_COMPARE_VAL = 15
-RETURN_SIZE = 100
+COLOR_COMPARE_VAL = 8
+RETURN_SIZE = 30
 
 # Kmean settings
 NUMBER_K = 5

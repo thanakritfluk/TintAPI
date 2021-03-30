@@ -45,7 +45,6 @@ class ColorPredictor(DetectLandmarks):
         return result
 
 
-
     def get_lipstick_predict(self):
         lip_np = self.get_lip_np(self.image)
         LIPAREA_NAME = "".join(("LipArea_",self.user_id,".jpg"))
@@ -109,9 +108,35 @@ class ColorPredictor(DetectLandmarks):
         self.print_result(5,similar_foundation)
         return self.get_custom_return_size(similar_foundation)
         
-        #  if i>=2 and i<=5 or i ==29  or i== 40 or i ==49:
-        #  cheek_point.append([pt.x,pt.y])    
 
-    def get_cheek_predict(self):
-        pass
+    def get_blush_predict(self, blush_color):
+        dominant_color = ImageColor.getcolor(blush_color, "RGB")
+        similar_blush = []
+        blush_list = Blush.get_all_blush()
+        for product in blush_list:
+            for color in product['product_colors']:
+                if "," in color['hex_value']:
+                    color_list = color['hex_value'].split(",")
+                    for i in color_list:
+                        rgb_color = ImageColor.getcolor(i, "RGB")
+                        str_rgb_color = str(rgb_color)
+                        # Compare using delta_e
+                        compare_result = compare_delta_e(dominant_color, rgb_color)
+                        if(compare_result <= COLOR_COMPARE_VAL):
+                                similar_blush.append({'_id':product['_id'],'brand':product['brand'],'serie':product['name'],'price':product['price'],'image_link':product['image_link'],'product_link':product['product_link'],'category':product['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': product['api_featured_image']})
+                else:
+                    rgb_color = ImageColor.getcolor(color['hex_value'], "RGB")
+                    str_rgb_color = str(rgb_color)
+                    # Compare using delta_e
+                    compare_result = compare_delta_e(dominant_color, rgb_color)
+                    if(compare_result <= COLOR_COMPARE_VAL):
+                            similar_blush.append({'_id':product['_id'],'brand':product['brand'],'serie':product['name'],'price':product['price'],'image_link':product['image_link'],'product_link':product['product_link'],'category':product['category'],'color_name':color['colour_name'],'rgb_value':str_rgb_color, 'deltaE':compare_result, 'api_image_link': product['api_featured_image']})
+        # Print for check return lip color easeier
+        self.print_result(5,similar_blush)
+        return self.get_custom_return_size(similar_blush)
+
+
+    def get_all_prediction(self,blush_color):
+        return {"Lipstick":self.get_lipstick_predict(),"Foundation":self.get_foundation_predict(),"Blush":self.get_blush_predict(blush_color)}
+        
 

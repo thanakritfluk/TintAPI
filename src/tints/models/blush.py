@@ -13,8 +13,8 @@ class Blush(object):
     def insert(self):
         return DB.insert(collection=COLLECTION_NAME, data=self.json())
 
-    def get_all_blush(brand):
-        return list(DB.find(collection=COLLECTION_NAME, filters={}, field={"brand":1,"name":1,"price":1,"price_sign":1,"currency":1, "image_link":1, "product_link":1, "category": 1, "product_color":1, "api_featured_image":1}))
+    def get_all_blush():
+        return list(DB.find(collection=COLLECTION_NAME, filters={}, field={"brand":1,"name":1,"price":1,"price_sign":1,"currency":1, "image_link":1, "product_link":1, "category": 1, "product_colors":1, "api_featured_image":1}))
 
     def json(self):
         return {'name':self.name,'product_colors':self.color,'price':self.price, 'created_at':self.created_at}
