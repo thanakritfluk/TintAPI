@@ -1,4 +1,5 @@
 import io
+import os
 from flask import Flask, request, send_from_directory, jsonify
 from flask_cors import CORS, cross_origin
 from PIL import Image
@@ -8,7 +9,7 @@ from src.tints.cv.color_prediction.color_predictor import ColorPredictor
 from src.tints.cv.simulation.apply_makeup import ApplyMakeup
 from src.tints.db.database import DB
 from src.tints.utils.json_encode import JSONEncoder
-from src.tints.settings import SIMULATOR_OUTPUT
+from src.tints.settings import SIMULATOR_OUTPUT, SIMULATOR_INPUT
 
 # app reference
 app = Flask(__name__)
@@ -64,7 +65,8 @@ def prediction():
 def get_response_image(image_path):
     pil_img = Image.open(image_path, mode='r')  # reads the PIL image
     byte_arr = io.BytesIO()
-    pil_img.save(byte_arr, format='PNG')  # convert the PIL image to byte array
+    # convert the PIL image to byte array
+    pil_img.save(byte_arr, format='JPEG')
     encoded_img = encodebytes(byte_arr.getvalue()).decode(
         'ascii')  # encode as base64
     return encoded_img
@@ -77,22 +79,24 @@ def simulator_lip():
     if 'user_image' not in request.files:
         return {"detail": "No file found"}, 400
     user_image = request.files['user_image']
-    user_image_1 = request.files['user_image_1']
-    user_image_2 = request.files['user_image_2']
+    # user_image_1 = request.files['user_image_1']
+    # user_image_2 = request.files['user_image_2']
     if user_image.filename == '':
         return {"detail": "Invalid file or filename missing"}, 400
     user_id = request.form.get('user_id')
+    image_copy_name = 'simulated_image-{}.jpg'.format(str(user_id))
+    user_image.save(os.path.join(SIMULATOR_INPUT, image_copy_name))
     rlip = request.form.get('rlip')
     glip = request.form.get('glip')
     blip = request.form.get('blip')
     apply_makeup = ApplyMakeup()
 
-    predict_result_intense = apply_makeup.apply_lipstick(
-        user_image, rlip, glip, blip, 5, 5)
     predict_result_medium = apply_makeup.apply_lipstick(
-        user_image_1, rlip, glip, blip, 51, 51)
+        image_copy_name, rlip, glip, blip, 51, 51)
     predict_result_fade = apply_makeup.apply_lipstick(
-        user_image_2, rlip, glip, blip, 81, 81)
+        image_copy_name, rlip, glip, blip, 121, 121)
+    predict_result_intense = apply_makeup.apply_lipstick(
+        image_copy_name, rlip, glip, blip, 21, 21)
 
     result = [predict_result_intense,
               predict_result_medium, predict_result_fade]

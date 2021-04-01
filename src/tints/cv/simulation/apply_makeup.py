@@ -38,8 +38,9 @@ class ApplyMakeup(DetectLandmarks):
 
     def __read_image(self, filename):
         """ Read image from path forwarded """
-        self.image = cv2.imdecode(np.fromstring(
-            filename.read(), np.uint8), cv2.IMREAD_COLOR)
+        # self.image = cv2.imdecode(np.fromstring(
+        #     filename.read(), np.uint8), cv2.IMREAD_COLOR)
+        self.image = cv2.imread(os.path.join(SIMULATOR_INPUT, filename))
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
         self.im_copy = self.image.copy()
         self.height, self.width = self.image.shape[:2]
