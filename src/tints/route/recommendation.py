@@ -3,20 +3,20 @@ from flask_cors import cross_origin
 from src.tints.utils.json_encode import JSONEncoder
 
 
-simulation_route = Blueprint('simulation_route', __name__)
+recommendation = Blueprint('recommendation', __name__)
 
 # This method executes before any API request
-@simulation_route.before_request
+@recommendation.before_request
 def before_request():
-    print('Start Simulation API request')
+    print('Start Recommendation API request')
 
 
-@simulation_route.route('/api/test/simulation')
+@recommendation.route('/api/test/recommendation')
 def test_simulation():
-    return("Success get simulation api call", 200)
+    return("Success get recommendation api call", 200)
 
 
 # This method executes after every API request.
-@simulation_route.after_request
+@recommendation.after_request
 def after_request(response):
     return response
