@@ -75,6 +75,8 @@ class DetectLandmarks(object):
     def convert_request_files_to_image(self,request_file):
         return cv2.imdecode(np.fromstring(request_file.read(), np.uint8), cv2.IMREAD_COLOR)
 
+    def save_file(self,output_path,image, filename):
+        cv2.imwrite(pjoin(output_path,filename),image)
 
     def create_box(self, image, output_path, output_name, np_points, flag=None):
         if flag == self.COLOR_PREDICTION_FILE_READ:

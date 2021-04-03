@@ -67,9 +67,11 @@ def get_cheek_image():
     cheek_np = detector.get_cheek_np(ref_face_img)
     base_image_name = "".join((user_id,"_",time.strftime('%H-%M-%S')))
     save_image_name = "".join((base_image_name,SAVE_FILE_TYPE))
+    save_image_original_name = "".join((user_id,SAVE_FILE_TYPE))
+    detector.save_file(COLOR_PREDICTION_INPUT,ref_face_img,save_image_original_name)
     detector.create_box(ref_face_img,COLOR_PREDICTION_INPUT,base_image_name,cheek_np)
     image_path = pjoin(COLOR_PREDICTION_INPUT,save_image_name)
-    return send_file(image_path, mimetype='image/jpg',attachment_filename=save_image_name)
+    return send_file(image_path, mimetype='image/jpg',as_attachment=True,attachment_filename=save_image_name)
 
 #Method 2 required cheeck color after user pickle from cheek image  
 @cross_origin  
