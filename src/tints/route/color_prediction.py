@@ -34,8 +34,8 @@ def get_lipstick_brand_list():
     return(JSONEncoder().encode(lst), 200)
 
 #Method 1 required cheek color at first
-@color_prediction.route('/api/v1/get/prediction/color', methods=['POST'])
 @cross_origin()
+@color_prediction.route('/api/v1/get/prediction/color', methods=['POST'])
 def prediction():
     # check if the post request has the file part
     if 'ref_face' not in request.files:
@@ -55,9 +55,8 @@ def prediction():
     # predict_result = color_prediction.get_lipstick_predict()
     # return (JSONEncoder().encode(predict_result), 200)
 
-
-@color_prediction.route('/api/v2/get/cheek/image', methods=['POST'])
 @cross_origin()
+@color_prediction.route('/api/v2/get/cheek/image', methods=['POST'])
 def get_cheek_image():
     if 'ref_face' not in request.files:
         return {"detail": "No file found"}, 400
@@ -72,9 +71,9 @@ def get_cheek_image():
     image_path = pjoin(COLOR_PREDICTION_INPUT,save_image_name)
     return send_file(image_path, mimetype='image/jpg')
 
-#Method 2 required cheeck color after user pickle from cheek image    
+#Method 2 required cheeck color after user pickle from cheek image  
+@cross_origin  
 @color_prediction.route('/api/v2/get/prediction/color',methods=['POST'])
-# @cross_origin
 def get_color_prediction():
     if 'filename' not in request.form:
         return {"detail": "File name not found"} , 400
