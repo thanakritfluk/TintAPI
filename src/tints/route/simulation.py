@@ -12,6 +12,8 @@ from src.tints.settings import SIMULATOR_INPUT, SIMULATOR_OUTPUT
 simulation = Blueprint('simulation', __name__)
 
 # This method executes before any API request
+
+
 @simulation.before_request
 def before_request():
     print('Start Simulation API request')
@@ -67,12 +69,46 @@ def simulator_lip():
 
     return (JSONEncoder().encode(encoded_img), 200)
 
-    # return send_from_directory(
-    #     SIMULATOR_OUTPUT,
-    #     predict_result_intense,
-    #     mimetype='image/jpeg')
 
+@simulation.route('/api/simulator/blush', methods=['POST'])
+@cross_origin()
+def simulator_blush():
+    # check if the post request has the file part
+    if 'user_image' not in request.files:
+        return {"detail": "No file found"}, 400
+    user_image = request.files['user_image']
+    # user_image_1 = request.files['user_image_1']
+    # user_image_2 = request.files['user_image_2']
+    if user_image.filename == '':
+        return {"detail": "Invalid file or filename missing"}, 400
+    user_id = request.form.get('user_id')
+    image_copy_name = 'simulated_image-{}.jpg'.format(str(user_id))
+    user_image.save(os.path.join(SIMULATOR_INPUT, image_copy_name))
+    rlip = request.form.get('rlip')
+    glip = request.form.get('glip')
+    blip = request.form.get('blip')
+    apply_makeup = ApplyMakeup()
 
+    predict_result_medium = apply_makeup.apply_blush(
+        image_copy_name, rlip, glip, blip, 51, 51)
+    print(predict_result_medium)
+    predict_result_fade = apply_makeup.apply_blush(
+        image_copy_name, rlip, glip, blip, 121, 121)
+    predict_result_intense = apply_makeup.apply_blush(
+        image_copy_name, rlip, glip, blip, 21, 21)
+
+    result = [predict_result_intense,
+              predict_result_medium, predict_result_fade]
+    encoded_img = []
+    for image_path in result:
+        encoded_img.append(get_response_image(
+            '{}/{}'.format(SIMULATOR_OUTPUT, image_path)))
+
+    # return (JSONEncoder().encode(encoded_img), 200)
+    return send_from_directory(
+        SIMULATOR_OUTPUT,
+        predict_result_medium,
+        mimetype='image/jpeg')
 
 
 # This method executes after every API request.

@@ -5,6 +5,7 @@ import scipy.interpolate
 import cv2
 import numpy as np
 from skimage import color
+from PIL import Image
 from src.tints.cv.detector import DetectLandmarks
 from src.tints.settings import SIMULATOR_INPUT, SIMULATOR_OUTPUT
 import os
@@ -25,13 +26,17 @@ class ApplyMakeup(DetectLandmarks):
         self.red_l = 0
         self.green_l = 0
         self.blue_l = 0
-        self.red_e = 0
-        self.green_e = 0
-        self.blue_e = 0
+        self.red_b = 0
+        self.green_b = 0
+        self.blue_b = 0
         self.debug = 0
         self.image = 0
+        self.image_cheek = 0
+        self.image_cheek_copy = 0
         self.width = 0
         self.height = 0
+        self.width_b = 0
+        self.height_b = 0
         self.im_copy = 0
         self.lip_x = []
         self.lip_y = []
@@ -183,6 +188,35 @@ class ApplyMakeup(DetectLandmarks):
         self.__smoothen_color(uol_c, uil_c, ksize_h, ksize_w)
         self.__smoothen_color(lol_c, lil_c, ksize_h, ksize_w)
 
+    def __fill_blush_color():
+        intensity = 0.5
+        val = color.rgb2lab((self.image_cheek / 255.)
+                            ).reshape(self.width_b * self.height_b, 3)
+        L, A, B = mean(val[:, 0]), mean(val[:, 1]), mean(val[:, 2])
+        L1, A1, B1 = color.rgb2lab(
+            np.array((self.red_b / 255., self.green_b / 255., self.blue_b / 255.)).reshape(1, 1, 3)).reshape(3, )
+        ll, aa, bb = (L1 - L) * intensity, (A1 - A) * \
+            intensity, (B1 - B) * intensity
+        val[:, 0] = np.clip(val[:, 0] + ll, 0, 100)
+        val[:, 1] = np.clip(val[:, 1] + aa, -127, 128)
+        val[:, 2] = np.clip(val[:, 2] + bb, -127, 128)
+        self.image_cheek = color.lab2rgb(
+            val.reshape(self.height_b, self.width_b, 3)) * 255
+
+    def __smoothen_blush(x, y):
+        imgBase = np.zeros((self.height_b, self.height_b))
+        cv2.fillConvexPoly(imgBase, np.array(c_[x, y], dtype='int32'), 1)
+        imgMask = cv2.GaussianBlur(imgBase, (81, 81), 0)
+
+        imgBlur3D = np.ndarray([self.height_b, self.width_b, 3], dtype='float')
+        imgBlur3D[:, :, 0] = imgMask
+        imgBlur3D[:, :, 1] = imgMask
+        imgBlur3D[:, :, 2] = imgMask
+        self.image_cheek_copy = (
+            imgBlur3D*self.image_cheek + (1 - imgBlur3D)*self.image_cheek_copy).astype('uint8')
+        cv2.imwrite(os.path.join(SIMULATOR_OUTPUT, 'smooth_blush.jpg'),
+                    self.image_cheek_copy)
+
     def apply_lipstick(self, filename, rlips, glips, blips, ksize_h, ksize_w):
         """
         Applies lipstick on an input image.
@@ -216,4 +250,53 @@ class ApplyMakeup(DetectLandmarks):
 
         # cv2.imwrite(file_name, self.im_copy)
         cv2.imwrite(os.path.join(SIMULATOR_OUTPUT, file_name), self.im_copy)
+        return file_name
+
+    def apply_blush(self, filename, rBlush, gBlush, bBlush, ksize_h, ksize_w):
+        self.red_b = int(rBlush)
+        self.green_b = int(gBlush)
+        self.blue_b = int(bBlush)
+        self.image_cheek = cv2.imread(os.path.join(SIMULATOR_INPUT, filename))
+        gray_image = cv2.cvtColor(self.image_cheek, cv2.COLOR_RGB2GRAY)
+        self.image_cheek = Image.fromarray(self.image_cheek)
+        shape = self.get_cheek_shape(gray_image)
+        self.image_cheek = np.asarray(self.image_cheek)
+        self.height_b, self.width_b = self.image_cheek.shape[:2]
+        self.image_cheek_copy = self.image_cheek.copy()
+
+        indices_left = [1, 2, 3, 4, 48, 31, 36]
+        left_cheek_x = [shape[i][0] for i in indices_left]
+        left_cheek_y = [shape[i][1] for i in indices_left]
+        print('left_cheek_y')
+        left_cheek_x, left_cheek_y = self.get_boundary_points(
+            left_cheek_x, left_cheek_y)
+        print('get_boundary_points')
+        left_cheek_y, left_cheek_x = self.get_interior_points(
+            left_cheek_x, left_cheek_y)
+        print('get_interior_points')
+        self.fill_blush_color()
+        cv2.imwrite(os.path.join(SIMULATOR_OUTPUT, 'fill_blush.jpg'),
+                    self.image_cheek)
+        self.smoothen_blush(left_cheek_x, left_cheek_y)
+        cv2.imwrite(os.path.join(SIMULATOR_OUTPUT, 'smooth.jpg'),
+                    self.image_cheek_copy)
+        # cv2.imwrite(os.path.join(SIMULATOR_OUTPUT, 'output.jpg'),
+        #             self.image_cheek_copy)
+
+        indices_right = [15, 14, 13, 12, 54, 35, 45]
+        right_cheek_x = [shape[i][0] for i in indices_right]
+        right_cheek_y = [shape[i][1] for i in indices_right]
+        right_cheek_x, right_cheek_y = get_boundary_points(
+            right_cheek_x, right_cheek_y)
+        right_cheek_y, right_cheek_x = get_interior_points(
+            right_cheek_x, right_cheek_y)
+        self.fill_blush_color()
+        self.smoothen_blush(right_cheek_x, right_cheek_y)
+
+        # name = 'color_' + str(self.red_b) + '_' + \
+        #     str(self.green_b) + '_' + str(self.blue_b)
+        # # file_name = 'lip_output-' + name + '.jpg'
+        file_name = 'blush_output-{}x{}_{}.jpg'.format(ksize_h, ksize_w, name)
+        cv2.imwrite(os.path.join(SIMULATOR_OUTPUT, file_name),
+                    self.image_cheek_copy)
         return file_name

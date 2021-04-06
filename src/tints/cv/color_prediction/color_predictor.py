@@ -108,7 +108,7 @@ class ColorPredictor(DetectLandmarks):
         return int(skin_type)
 
     def get_foundation_predict(self):
-        cheek_np = self.get_cheek_np(self.image, self.flag)
+        cheek_np = self.get_cheek_np(self.image, self.flag)        
         CHEEK_NAME = "".join(("CheekArea_",self.user_id))
         self.create_box(self.image, COLOR_PREDICTION_OUTPUT, CHEEK_NAME, cheek_np, self.flag)
         img_path = pjoin(COLOR_PREDICTION_OUTPUT,"".join((CHEEK_NAME,SAVE_FILE_TYPE)))
