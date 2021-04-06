@@ -160,8 +160,12 @@ class DetectLandmarks(object):
         print('x-rang')
         print(xrang)
         for i in xrang:
-            ylist = y[where(x == i)]
-            ext(amin(ylist), amax(ylist), i)
+            try:
+                ylist = y[where(x == i)]
+                ext(amin(ylist), amax(ylist), i)
+            except ValueError:  # raised if `y` is empty.
+                pass
+
         print('xrang2 get_interior_points')
         return np.array(intx, dtype=np.int32), np.array(inty, dtype=np.int32)
 
