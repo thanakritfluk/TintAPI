@@ -84,18 +84,17 @@ def simulator_blush():
     user_id = request.form.get('user_id')
     image_copy_name = 'simulated_image-{}.jpg'.format(str(user_id))
     user_image.save(os.path.join(SIMULATOR_INPUT, image_copy_name))
-    rlip = request.form.get('rlip')
-    glip = request.form.get('glip')
-    blip = request.form.get('blip')
+    r_blush = request.form.get('r_blush')
+    g_blush = request.form.get('g_blush')
+    b_blush = request.form.get('b_blush')
     apply_makeup = ApplyMakeup()
 
     predict_result_medium = apply_makeup.apply_blush(
-        image_copy_name, rlip, glip, blip, 51, 51)
-    print(predict_result_medium)
+        image_copy_name, r_blush, g_blush, b_blush, 51, 51)
     predict_result_fade = apply_makeup.apply_blush(
-        image_copy_name, rlip, glip, blip, 121, 121)
+        image_copy_name, r_blush, g_blush, b_blush, 121, 121)
     predict_result_intense = apply_makeup.apply_blush(
-        image_copy_name, rlip, glip, blip, 21, 21)
+        image_copy_name, r_blush, g_blush, b_blush, 21, 21)
 
     result = [predict_result_intense,
               predict_result_medium, predict_result_fade]
@@ -104,11 +103,11 @@ def simulator_blush():
         encoded_img.append(get_response_image(
             '{}/{}'.format(SIMULATOR_OUTPUT, image_path)))
 
-    # return (JSONEncoder().encode(encoded_img), 200)
-    return send_from_directory(
-        SIMULATOR_OUTPUT,
-        predict_result_medium,
-        mimetype='image/jpeg')
+    return (JSONEncoder().encode(encoded_img), 200)
+    # return send_from_directory(
+    #     SIMULATOR_OUTPUT,
+    #     predict_result_medium,
+    #     mimetype='image/jpeg')
 
 
 # This method executes after every API request.
