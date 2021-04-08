@@ -48,17 +48,17 @@ def simulator_lip():
     user_id = request.form.get('user_id')
     image_copy_name = 'simulated_image-{}.jpg'.format(str(user_id))
     user_image.save(os.path.join(SIMULATOR_INPUT, image_copy_name))
-    rlip = request.form.get('rlip')
-    glip = request.form.get('glip')
-    blip = request.form.get('blip')
+    r_value = request.form.get('r_value')
+    g_value = request.form.get('g_value')
+    b_value = request.form.get('b_value')
     apply_makeup = ApplyMakeup()
 
     predict_result_medium = apply_makeup.apply_lipstick(
-        image_copy_name, rlip, glip, blip, 51, 51)
+        image_copy_name, r_value, g_value, b_value, 51, 51)
     predict_result_fade = apply_makeup.apply_lipstick(
-        image_copy_name, rlip, glip, blip, 121, 121)
+        image_copy_name, r_value, g_value, b_value, 121, 121)
     predict_result_intense = apply_makeup.apply_lipstick(
-        image_copy_name, rlip, glip, blip, 21, 21)
+        image_copy_name, r_value, g_value, b_value, 21, 21)
 
     result = [predict_result_intense,
               predict_result_medium, predict_result_fade]
@@ -72,7 +72,7 @@ def simulator_lip():
 
 @simulation.route('/api/simulator/blush', methods=['POST'])
 @cross_origin()
-def simulator_blush():
+def simulator_value():
     # check if the post request has the file part
     if 'user_image' not in request.files:
         return {"detail": "No file found"}, 400
@@ -84,17 +84,17 @@ def simulator_blush():
     user_id = request.form.get('user_id')
     image_copy_name = 'simulated_image-{}.jpg'.format(str(user_id))
     user_image.save(os.path.join(SIMULATOR_INPUT, image_copy_name))
-    r_blush = request.form.get('r_blush')
-    g_blush = request.form.get('g_blush')
-    b_blush = request.form.get('b_blush')
+    r_value = request.form.get('r_value')
+    g_value = request.form.get('g_value')
+    b_value = request.form.get('b_value')
     apply_makeup = ApplyMakeup()
 
-    predict_result_medium = apply_makeup.apply_blush(
-        image_copy_name, r_blush, g_blush, b_blush, 51, 51)
     predict_result_fade = apply_makeup.apply_blush(
-        image_copy_name, r_blush, g_blush, b_blush, 121, 121)
+        image_copy_name, r_value, g_value, b_value, 71, 71, 0.2)
+    predict_result_medium = apply_makeup.apply_blush(
+        image_copy_name, r_value, g_value, b_value, 51, 51, 0.3)
     predict_result_intense = apply_makeup.apply_blush(
-        image_copy_name, r_blush, g_blush, b_blush, 21, 21)
+        image_copy_name, r_value, g_value, b_value, 21, 21, 0.4)
 
     result = [predict_result_intense,
               predict_result_medium, predict_result_fade]

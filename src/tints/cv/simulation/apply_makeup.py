@@ -188,8 +188,7 @@ class ApplyMakeup(DetectLandmarks):
         self.__smoothen_color(uol_c, uil_c, ksize_h, ksize_w)
         self.__smoothen_color(lol_c, lil_c, ksize_h, ksize_w)
 
-    def __fill_blush_color(self):
-        intensity = 0.5
+    def __fill_blush_color(self, intensity):
         val = color.rgb2lab((self.image_cheek / 255.)
                             ).reshape(self.width_b * self.height_b, 3)
         L, A, B = np.mean(val[:, 0]), np.mean(val[:, 1]), np.mean(val[:, 2])
@@ -269,7 +268,7 @@ class ApplyMakeup(DetectLandmarks):
         cv2.imwrite(os.path.join(SIMULATOR_OUTPUT, file_name), self.im_copy)
         return file_name
 
-    def apply_blush(self, filename, rBlush, gBlush, bBlush, ksize_h, ksize_w):
+    def apply_blush(self, filename, rBlush, gBlush, bBlush, ksize_h, ksize_w, intensity):
         self.red_b = int(rBlush)
         self.green_b = int(gBlush)
         self.blue_b = int(bBlush)
@@ -292,7 +291,7 @@ class ApplyMakeup(DetectLandmarks):
         left_cheek_y, left_cheek_x = self.get_interior_points(
             left_cheek_x, left_cheek_y)
 
-        self.__fill_blush_color()
+        self.__fill_blush_color(intensity)
         self.__smoothen_blush(left_cheek_x, left_cheek_y, ksize_h, ksize_w)
 
         indices_right = [15, 14, 13, 12, 54, 35, 45]
@@ -302,7 +301,7 @@ class ApplyMakeup(DetectLandmarks):
             right_cheek_x, right_cheek_y)
         right_cheek_y, right_cheek_x = self.get_interior_points(
             right_cheek_x, right_cheek_y)
-        self.__fill_blush_color()
+        self.__fill_blush_color(intensity)
         self.__smoothen_blush(right_cheek_x, right_cheek_y, ksize_h, ksize_w)
 
         name = 'color_' + str(self.red_b) + '_' + \
