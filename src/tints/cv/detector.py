@@ -6,10 +6,10 @@ from pylab import *
 from scipy import interpolate
 from imutils import face_utils
 from os.path import join as pjoin
-from src.tints.settings import COLOR_PREDICTION_INPUT, COLOR_PREDICTION_OUTPUT, SHAPE_68_PATH, SAVE_FILE_TYPE
+from src.tints.settings import COLOR_PREDICTION_INPUT, COLOR_PREDICTION_OUTPUT, SHAPE_68_PATH,SHAPE_81_PATH, SAVE_FILE_TYPE
 
 
-PREDICTOR_PATH = SHAPE_68_PATH
+PREDICTOR_PATH = SHAPE_81_PATH
 
 
 class DetectLandmarks(object):
@@ -71,7 +71,7 @@ class DetectLandmarks(object):
         for (i, point) in enumerate(lanmarks):
             x = point[0, 0]
             y = point[0, 1]
-            cv2.circle(np.float32(image_copy), (x, y), 1, (0, 255, 255), -1)
+            cv2.circle(image_copy, (x, y), 2, (0, 255, 255), 2)
             cv2.putText(image_copy, "{}".format(i+1), (x, y-2),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
         cv2.imwrite(pjoin(output_path, "".join(

@@ -10,6 +10,7 @@ USER_IMAGE_FILE_TYPE = '.png'
 # Model path
 SHAPE_68_PATH = os.path.join(
     APP_ROOT, './cv/train_model/shape_predictor_68_face_landmarks.dat')
+SHAPE_81_PATH = os.path.join(APP_ROOT, './cv/train_model/shape_predictor_81_face_landmarks.dat')
 SKIN_CLUSTER_MODEL_PATH = os.path.join(APP_ROOT,'./cv/train_model/skin_tone_model.sav')
 
 
