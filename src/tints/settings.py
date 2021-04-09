@@ -3,6 +3,10 @@ import os
 # __file__ refers to the file settings.py
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
 
+# User path
+USER_IMAGE_PATH =os.path.join(APP_ROOT,  './image/user_image')
+USER_IMAGE_FILE_TYPE = '.png'
+
 # Model path
 SHAPE_68_PATH = os.path.join(
     APP_ROOT, './cv/train_model/shape_predictor_68_face_landmarks.dat')

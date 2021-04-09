@@ -7,6 +7,8 @@ from src.tints.settings import COLOR_PREDICTION_INPUT, SAVE_FILE_TYPE
 from src.tints.utils.json_encode import JSONEncoder
 from os.path import join as pjoin
 import time
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt_identity
 
 
 color_prediction = Blueprint('color_prediction', __name__)
@@ -43,14 +45,16 @@ def get_lipstick_brand_list():
 
 @cross_origin()
 @color_prediction.route('/api/v1/get/prediction/color', methods=['POST'])
+@jwt_required()
 def prediction():
+    current_user = get_jwt_identity()
     # check if the post request has the file part
     if 'ref_face' not in request.files:
         return {"detail": "No file found"}, 400
     ref_face = request.files['ref_face']
     if ref_face.filename == '':
         return {"detail": "Invalid file or filename missing"}, 400
-    user_id = request.form.get('user_id')
+    user_id = current_user
     color_prediction = ColorPredictor(user_id)
     color_prediction.read_image_from_request_file(ref_face)
     result = color_prediction.get_all_prediction(
@@ -66,11 +70,14 @@ def prediction():
 
 @cross_origin()
 @color_prediction.route('/api/v2/get/cheek/image', methods=['POST'])
+@jwt_required()
 def get_cheek_image():
+    current_user = get_jwt_identity()
+    print("Current user =",current_user)
     if 'ref_face' not in request.files:
         return {"detail": "No file found"}, 400
     ref_face = request.files['ref_face']
-    user_id = request.form.get('user_id')
+    user_id = current_user
     detector = DetectLandmarks()
     ref_face_img = detector.convert_request_files_to_image(ref_face)
     cheek_np = detector.get_cheek_np(ref_face_img)
@@ -89,11 +96,13 @@ def get_cheek_image():
 # Method 2 required cheeck color after user pickle from cheek image
 @cross_origin
 @color_prediction.route('/api/v2/get/prediction/color', methods=['POST'])
+@jwt_required()
 def get_color_prediction():
+    current_user = get_jwt_identity()
     if 'filename' not in request.form:
         return {"detail": "File name not found"}, 400
     filename = request.form.get('filename')
-    user_id = filename.split("_")[0]
+    user_id = current_user
     filename = "".join((user_id, SAVE_FILE_TYPE))
     color_prediction = ColorPredictor(user_id, "COLOR_PREDICTION_FILE_READ")
     color_prediction.read_image_from_storage(filename)
