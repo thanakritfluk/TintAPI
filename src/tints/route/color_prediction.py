@@ -68,12 +68,12 @@ def prediction():
     # return (JSONEncoder().encode(predict_result), 200)
 
 
-@cross_origin()
 @color_prediction.route('/api/v2/get/cheek/image', methods=['POST'])
 @jwt_required()
+@cross_origin()
 def get_cheek_image():
     current_user = get_jwt_identity()
-    print("Current user =",current_user)
+    print("Current user =", current_user)
     if 'ref_face' not in request.files:
         return {"detail": "No file found"}, 400
     ref_face = request.files['ref_face']
@@ -83,19 +83,23 @@ def get_cheek_image():
     cheek_np = detector.get_cheek_np(ref_face_img)
     base_image_name = "".join((user_id, "_", time.strftime('%H-%M-%S')))
     save_image_name = "".join((base_image_name, SAVE_FILE_TYPE))
-    save_image_original_name = "".join((user_id,SAVE_FILE_TYPE))
-    detector.save_file(COLOR_PREDICTION_INPUT,ref_face_img,save_image_original_name)
+    save_image_original_name = "".join((user_id, SAVE_FILE_TYPE))
+    detector.save_file(COLOR_PREDICTION_INPUT, ref_face_img,
+                       save_image_original_name)
     detector.create_box(ref_face_img, COLOR_PREDICTION_INPUT,
                         base_image_name, cheek_np)
     image_path = pjoin(COLOR_PREDICTION_INPUT, save_image_name)
     response = send_file(image_path, mimetype='image/jpeg',
                          as_attachment=True)
     response.headers["x-suggested-filename"] = save_image_name
+
     return response
 
 # Method 2 required cheeck color after user pickle from cheek image
-@cross_origin
+
+
 @color_prediction.route('/api/v2/get/prediction/color', methods=['POST'])
+@cross_origin()
 @jwt_required()
 def get_color_prediction():
     current_user = get_jwt_identity()
