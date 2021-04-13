@@ -223,10 +223,6 @@ class ApplyMakeup(DetectLandmarks):
         img_blur_3d[:, :, 0] = img_mask
         img_blur_3d[:, :, 1] = img_mask
         img_blur_3d[:, :, 2] = img_mask
-
-        # self.image_copy = (img_blur_3d * self.image * 0.7 +
-        #                          (1 - img_blur_3d * 0.7) * self.image_copy).astype('uint8')
-
         self.image_copy = (
             img_blur_3d * self.image + (1 - img_blur_3d) * self.image_copy).astype('uint8')
 
@@ -327,8 +323,6 @@ class ApplyMakeup(DetectLandmarks):
         self.height, self.width = self.image.shape[:2]
         self.image_copy = self.image.copy()
 
-        # indices_left = [1, 2, 3, 4, 48, 31, 36]
-        # indices_face_bottom = range(1, 27)
         face_bottom_x = [shape[i][0] for i in range(1, 27)]
         face_bottom_y = [shape[i][1] for i in range(1, 27)]
 
@@ -341,8 +335,6 @@ class ApplyMakeup(DetectLandmarks):
         self.__fill_blush_color(intensity)
         self.__smoothen_blush(face_bottom_x, face_bottom_y, ksize_h, ksize_w)
 
-        # indices_right = [15, 14, 13, 12, 54, 35, 45]
-        # indices_face_top = [18, 19, 20, 25, 27, 75, 77, 76, 80]
         face_top_x = [shape[i][0]
                       for i in range(18, 81)]
         face_top_y = [shape[i][1]
@@ -356,10 +348,9 @@ class ApplyMakeup(DetectLandmarks):
 
         name = 'color_' + str(self.red_b) + '_' + \
             str(self.green_b) + '_' + str(self.blue_b)
-        # # file_name = 'lip_output-' + name + '.jpg'
-
         # cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-        file_name = 'blush_output-{}x{}_{}.jpg'.format(ksize_h, ksize_w, name)
+        file_name = 'foundation_output-{}x{}_{}.jpg'.format(
+            ksize_h, ksize_w, name)
         self.image_copy = cv2.cvtColor(
             self.image_copy, cv2.COLOR_BGR2RGB)
         cv2.imwrite(os.path.join(SIMULATOR_OUTPUT, file_name),
