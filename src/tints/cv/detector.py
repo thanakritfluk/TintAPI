@@ -18,6 +18,7 @@ class DetectLandmarks(object):
     FILE_READ = 'FILE_READ'
     NETWORK_BYTE_STREAM = 'NETWORK_BYTE_STREAM'
     COLOR_PREDICTION_FILE_READ = "COLOR_PREDICTION_FILE_READ"
+    RECOMMENDATION_FILE_READ = "RECOMMENDATION_FILE_READ"
 
     def __init__(self):
         self.predictor = dlib.shape_predictor(PREDICTOR_PATH)
@@ -57,6 +58,8 @@ class DetectLandmarks(object):
         elif flag == self.COLOR_PREDICTION_FILE_READ:
             image = cv2.imread(image_file)
             landmarks = self.get_landmarks(image)
+        elif flag == self.RECOMMENDATION_FILE_READ:
+            landmarks = self.get_landmarks(image_file)
         if landmarks[0] is None or landmarks[1] is None:
             return None
         return landmarks
@@ -119,7 +122,7 @@ class DetectLandmarks(object):
         Returns points for lips as np array in given image.
         """
         lanmarks = self.get_face_data(image_file=image, flag=flag)
-        return lanmarks[48:]
+        return lanmarks[48:68]
 
     def get_lips(self, image_file, flag=None):
         """

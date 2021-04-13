@@ -31,6 +31,9 @@ SIMULATOR_INPUT = os.path.join(APP_ROOT, './image/simulator_input')
 SIMULATOR_OUTPUT = os.path.join(APP_ROOT, './image/simulator_output')
 
 
+# Recommendation
+RECOMMENDATION_PATH = os.path.join(APP_ROOT, './image/recommendation')
+
 # Kmean settings
 NUMBER_K = 5
 RETURN_INDEX = 2

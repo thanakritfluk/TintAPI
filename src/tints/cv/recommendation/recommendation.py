@@ -1,0 +1,61 @@
+from src.tints.cv.detector import DetectLandmarks
+from src.tints.models.lipstick import Lipstick
+from src.tints.models.foundation import Foundation
+from src.tints.models.blush import Blush
+from src.tints.settings import RECOMMENDATION_PATH, USER_IMAGE_PATH, SAVE_FILE_TYPE, USER_IMAGE_FILE_TYPE,SKIN_CLUSTER_MODEL_PATH
+from src.tints.utils.color import compare_delta_e,get_dominant_color_kmean
+from os.path import join as pjoin
+import cv2
+import pickle
+
+class Recommendation(DetectLandmarks):
+
+    
+    def __init__(self,user_id):
+        DetectLandmarks.__init__(self)
+        self.user_id = user_id
+        self.image = 0
+    
+    def set_image(self):
+       image_path = "".join((self.user_id,USER_IMAGE_FILE_TYPE))
+       self.image = cv2.imread(pjoin(USER_IMAGE_PATH,image_path))
+
+
+    def get_skin_type_cluster(self, rgb):
+        """ 
+        Return skin type divied in 4 category:
+        - 0 Light
+        - 1 Medium
+        - 2 Fair
+        - 3 Tan
+        """
+        load_model = pickle.load(open(SKIN_CLUSTER_MODEL_PATH,'rb'))
+        skin_type = load_model.predict([rgb])
+        return int(skin_type)
+
+
+    def get_skin_type(self):
+        cheek_np = self.get_cheek_np(self.image, "RECOMMENDATION_FILE_READ")
+        CHEEK_NAME = "".join(("CheekArea_",self.user_id))
+        self.create_box(self.image, RECOMMENDATION_PATH, CHEEK_NAME, cheek_np)
+        img_path = pjoin(RECOMMENDATION_PATH,"".join((CHEEK_NAME,SAVE_FILE_TYPE)))
+        dominant_color = get_dominant_color_kmean(img_path)[0]
+        skin_type = self.get_skin_type_cluster(dominant_color)
+        if skin_type == 0:
+            return "Light"
+        elif skin_type == 1:
+            return "Medium"
+        elif skin_type == 2:
+            return "Fair"
+        else:
+            return "Tan"
+
+    
+    def get_recommendation(self):
+        self.set_image()
+        skin_type = self.get_skin_type()
+        blush_list = Blush.get_blush_by_skin_type(skin_type)
+        lipstick_list = Lipstick.get_lipstick_by_skin_type(skin_type)
+        foundation_list = Foundation.get_foundation_by_skin_type(skin_type)
+        return {"Lipstick":lipstick_list,"Foundation":foundation_list,"Blush":blush_list}
+        

@@ -43,9 +43,10 @@ def get_lipstick_brand_list():
 # Method 1 required cheek color at first
 
 
-@cross_origin()
+
 @color_prediction.route('/api/v1/get/prediction/color', methods=['POST'])
 @jwt_required()
+@cross_origin()
 def prediction():
     current_user = get_jwt_identity()
     # check if the post request has the file part
@@ -68,9 +69,9 @@ def prediction():
     # return (JSONEncoder().encode(predict_result), 200)
 
 
-@cross_origin()
 @color_prediction.route('/api/v2/get/cheek/image', methods=['POST'])
 @jwt_required()
+@cross_origin()
 def get_cheek_image():
     current_user = get_jwt_identity()
     print("Current user =",current_user)
@@ -94,14 +95,11 @@ def get_cheek_image():
     return response
 
 # Method 2 required cheeck color after user pickle from cheek image
-@cross_origin
 @color_prediction.route('/api/v2/get/prediction/color', methods=['POST'])
 @jwt_required()
+@cross_origin()
 def get_color_prediction():
     current_user = get_jwt_identity()
-    if 'filename' not in request.form:
-        return {"detail": "File name not found"}, 400
-    filename = request.form.get('filename')
     user_id = current_user
     filename = "".join((user_id, SAVE_FILE_TYPE))
     color_prediction = ColorPredictor(user_id, "COLOR_PREDICTION_FILE_READ")
