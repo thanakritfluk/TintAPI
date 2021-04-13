@@ -16,6 +16,9 @@ colormath = "==3.0.0"
 flask-cors = "*"
 colorthief = "==0.2.1"
 sklearn = "*"
+scikit-image = "*"
+flask-bcrypt = "*"
+flask-jwt-extended = "*"
 
 [dev-packages]
 
