@@ -90,11 +90,11 @@ def simulator_value():
     apply_makeup = ApplyMakeup()
 
     predict_result_fade = apply_makeup.apply_blush(
-        image_copy_name, r_value, g_value, b_value, 71, 71, 0.2)
+        image_copy_name, r_value, g_value, b_value, 121, 121, 0.1)
     predict_result_medium = apply_makeup.apply_blush(
-        image_copy_name, r_value, g_value, b_value, 51, 51, 0.3)
+        image_copy_name, r_value, g_value, b_value, 81, 81, 0.15)
     predict_result_intense = apply_makeup.apply_blush(
-        image_copy_name, r_value, g_value, b_value, 21, 21, 0.4)
+        image_copy_name, r_value, g_value, b_value, 41, 41, 0.15)
 
     result = [predict_result_intense,
               predict_result_medium, predict_result_fade]
@@ -110,7 +110,47 @@ def simulator_value():
     #     mimetype='image/jpeg')
 
 
+@simulation.route('/api/simulator/foundation', methods=['POST'])
+@cross_origin()
+def foundation_value():
+    if 'user_image' not in request.files:
+        return {"detail": "No file found"}, 400
+    user_image = request.files['user_image']
+    # user_image_1 = request.files['user_image_1']
+    # user_image_2 = request.files['user_image_2']
+    if user_image.filename == '':
+        return {"detail": "Invalid file or filename missing"}, 400
+    user_id = request.form.get('user_id')
+    image_copy_name = 'simulated_image-{}.jpg'.format(str(user_id))
+    user_image.save(os.path.join(SIMULATOR_INPUT, image_copy_name))
+    r_value = request.form.get('r_value')
+    g_value = request.form.get('g_value')
+    b_value = request.form.get('b_value')
+    apply_makeup = ApplyMakeup()
+
+    predict_result_fade = apply_makeup.apply_foundation(
+        image_copy_name, r_value, g_value, b_value, 121, 121, 0.3)
+    predict_result_medium = apply_makeup.apply_foundation(
+        image_copy_name, r_value, g_value, b_value, 77, 77, 0.5)
+    predict_result_intense = apply_makeup.apply_foundation(
+        image_copy_name, r_value, g_value, b_value, 75, 75, 1.1)
+
+    result = [predict_result_intense,
+              predict_result_medium, predict_result_fade]
+    encoded_img = []
+    for image_path in result:
+        encoded_img.append(get_response_image(
+            '{}/{}'.format(SIMULATOR_OUTPUT, image_path)))
+
+    return (JSONEncoder().encode(encoded_img), 200)
+    return send_from_directory(
+        SIMULATOR_OUTPUT,
+        predict_result_medium,
+        mimetype='image/jpeg')
+
 # This method executes after every API request.
+
+
 @simulation.after_request
 def after_request(response):
     return response
