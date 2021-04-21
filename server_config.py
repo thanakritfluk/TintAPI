@@ -9,6 +9,7 @@ from src.tints.route.color_prediction import *
 from src.tints.route.recommendation import *
 from src.tints.route.simulation import *
 from src.tints.route.auth import *
+from src.tints.route.user import *
 
 # Load environment config from .env file
 load_dotenv()
@@ -29,6 +30,7 @@ port = int(os.environ.get('PORT', 8080))
 app.register_blueprint(color_prediction)
 app.register_blueprint(recommendation)
 app.register_blueprint(simulation)
+app.register_blueprint(user)
 app.register_blueprint(auth)
 
 # Start connect to MongoDB

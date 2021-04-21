@@ -28,6 +28,12 @@ class DB(object):
        return result
 
     @staticmethod
+    def update(collection, filters = None, field = None):
+        result = DB.DATABASE[collection].update(filters, field)
+        return result
+
+
+    @staticmethod
     def distinct(collection, field, field_distinct):
         result = DB.DATABASE[collection].find(field).distinct(field_distinct)
         return result

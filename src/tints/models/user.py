@@ -1,11 +1,15 @@
 from re import S
 from src.tints.db.database import DB
+from bson.objectid import ObjectId
 from flask_bcrypt import generate_password_hash, check_password_hash
 
 
 class User(object):
 
  COLLECTION_NAME = 'Users'
+ LIKE_LIPSTICK_FIELD_NAME = 'likedLip'
+ LIKE_FOUNDATION_FIELD_NAME = 'likedFoundation'
+ LIKE_BLUSH_FIELD_NAME = 'likedBlush'
 
  def __init__(self,id = None,email=None, password=None):
     self.id = id
@@ -30,5 +34,14 @@ class User(object):
  def signup(self):
     return DB.insert(collection=self.COLLECTION_NAME, data=self.json())
 
+ def add_liked_lipstick(self, id, json):
+    return DB.update(collection=self.COLLECTION_NAME, filters={"_id" : ObjectId(id)}, field= { '$push': { self.LIKE_LIPSTICK_FIELD_NAME : json } })
+
+ def add_liked_foundation(self, id, json):
+    return DB.update(collection=self.COLLECTION_NAME, filters={"_id" : ObjectId(id)}, field= { '$push': { self.LIKE_FOUNDATION_FIELD_NAME : json } })
+
+ def add_liked_blush(self, id, json):
+    return DB.update(collection=self.COLLECTION_NAME, filters={"_id" : ObjectId(id)}, field= { '$push': { self.LIKE_BLUSH_FIELD_NAME : json } })
+
  def json(self):
-     return {'email':self.email,'password': self.password}
+     return {'email':self.email,'password': self.password,'foundationList': [], 'likedLip':[], 'likedFoundation': [], 'likedBlush': []}

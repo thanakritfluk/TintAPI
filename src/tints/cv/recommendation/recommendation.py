@@ -53,6 +53,14 @@ class Recommendation(DetectLandmarks):
     
     def get_recommendation(self):
         self.set_image()
+        # 1. สร้าง list เอาไว้เก็บ skin types
+        # 2. เก็บสกินไทป์จากรูป user 
+        # 3. check ว่า มี foundation ส่งมามั้ย 
+            #   ถ้าไม่ ให้เอา skintype ที่ได้จาก รูป user ไปหา recommend เลย 
+            #   ถ้ามี ให้เอา สี foundation ไปเข้า model หาสีผิว >> เก็บเข้า list >> Check majority vote นับ skintype ที่มากสุด จากใน list เอาไป recommend
+
+        
+
         skin_type = self.get_skin_type()
         blush_list = Blush.get_blush_by_skin_type(skin_type)
         lipstick_list = Lipstick.get_lipstick_by_skin_type(skin_type)
