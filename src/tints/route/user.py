@@ -20,7 +20,6 @@ def like_lipstick():
     like_json_object = request.json
     user_id = get_jwt_identity()
     result = User().add_liked_lipstick(user_id, like_json_object)
-    print("Result status:",result['updatedExisting'])
     if not result['updatedExisting']:
         return ("Error Please Try Again", 400)
     return ("Add like successful", 200)
@@ -47,6 +46,39 @@ def like_blush():
     if not result['updatedExisting']:
         return ("Error Please Try Again", 400)
     return ("Add like successful", 200)
+
+@user.route('/api/user/delete/liked/lipstick', methods=['POST'])
+@jwt_required()
+@cross_origin()
+def delete_like_lipstick():
+    like_json_object = request.json
+    user_id = get_jwt_identity()
+    result = User().delete_liked_lipstick(user_id, like_json_object)
+    if not result['updatedExisting']:
+        return ("Error Please Try Again", 400)
+    return ("Delete successful", 200) 
+
+@user.route('/api/user/delete/liked/foundation', methods=['POST'])
+@jwt_required()
+@cross_origin()
+def delete_like_foundation():
+    like_json_object = request.json
+    user_id = get_jwt_identity()
+    result = User().delete_liked_foundation(user_id, like_json_object)
+    if not result['updatedExisting']:
+        return ("Error Please Try Again", 400)
+    return ("Delete successful", 200) 
+
+@user.route('/api/user/delete/liked/blush', methods=['POST'])
+@jwt_required()
+@cross_origin()
+def delete_like_blush():
+    like_json_object = request.json
+    user_id = get_jwt_identity()
+    result = User().delete_liked_blush(user_id, like_json_object)
+    if not result['updatedExisting']:
+        return ("Error Please Try Again", 400)
+    return ("Delete successful", 200) 
 
 # This method executes after every API request.
 @user.after_request
