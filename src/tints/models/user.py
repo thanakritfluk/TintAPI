@@ -11,10 +11,14 @@ class User(object):
  LIKE_FOUNDATION_FIELD_NAME = 'likedFoundation'
  LIKE_BLUSH_FIELD_NAME = 'likedBlush'
 
- def __init__(self,id = None,email=None, password=None):
+ def __init__(self,id = None,email=None, password=None, foundationList = [], likedLip = [], likedFoundation= [], likedBlush= []):
     self.id = id
     self.email = email
     self.password = password
+    self.foundationList = foundationList
+    self.likedLip = likedLip
+    self.likedFoundation = likedFoundation
+    self.likedBlush = likedBlush
 
  def hash_password(self):
    self.password = generate_password_hash(self.password).decode('utf8')
@@ -27,9 +31,22 @@ class User(object):
         return True
     return False
 
- def set_user_info_by_email(self,email):
-     user_info = (DB.find(collection=self.COLLECTION_NAME, filters={"email":email}, field={"email":1,"password":1}))[0]
-     return user_info
+
+ def get_user_info_by_id(self,id):
+    return  (DB.find(collection=self.COLLECTION_NAME, filters={"_id": ObjectId(id)}, field={"email":1,"password":1,'foundationList':1, 'likedLip':1, 'likedFoundation':1, 'likedBlush':1}))[0]
+
+ def get_user_info_by_email(self,email):
+    return  (DB.find(collection=self.COLLECTION_NAME, filters={"email": email}, field={"email":1,"password":1,'foundationList':1, 'likedLip':1, 'likedFoundation':1, 'likedBlush':1}))[0]
+
+
+ def set_user_info(self,user_info):
+     self.id = user_info['_id']
+     self.email = user_info['email']
+     self.password = user_info['password']
+     self.foundationList = user_info['foundationList']
+     self.likedLip = user_info['likedLip']
+     self.likedFoundation = user_info['likedFoundation']
+     self.likedBlush = user_info['likedBlush']
 
  def signup(self):
     return DB.insert(collection=self.COLLECTION_NAME, data=self.json())
@@ -54,3 +71,6 @@ class User(object):
 
  def json(self):
      return {'email':self.email,'password': self.password,'foundationList': [], 'likedLip':[], 'likedFoundation': [], 'likedBlush': []}
+
+ def login_user_info_json(self):
+     return {'email':self.email, 'foundationList':  self.foundationList, 'likedLip':self.likedLip, 'likedFoundation': self.likedFoundation, 'likedBlush': self.likedBlush}
