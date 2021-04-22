@@ -99,6 +99,25 @@ def change_password():
     except:
         return ("Invalid Token or Expired", 400)
 
+@auth.route('/api/auth/change/user/image', methods=['PUT'])
+@jwt_required()
+@cross_origin()
+def change_user_image():
+    try:
+        if 'user_image' not in request.files:
+            return {"detail": "No image file found"}, 400
+        user_image = request.files['user_image']
+        user_id = get_jwt_identity()
+        user_info = User().get_user_info_by_id(user_id)
+        user = User()
+        user.set_user_info(user_info)
+        detector = DetectLandmarks()
+        new_user_image = detector.convert_request_files_to_image(user_image)
+        detector.save_file(USER_IMAGE_PATH, new_user_image,"".join((user_id,USER_IMAGE_FILE_TYPE)))
+        return ("Changed user image", 200)
+    except:
+        return ("Invalid Token or Expired", 400)
+
 
 # This method executes after every API request.
 @auth.after_request
