@@ -2,10 +2,13 @@ from flask import request, Blueprint
 from flask_cors import cross_origin
 from src.tints.settings import USER_IMAGE_PATH, USER_IMAGE_FILE_TYPE
 from src.tints.cv.detector import DetectLandmarks
-from src.tints.utils.json_encode import JSONEncoder
 from src.tints.models.user import User
 from flask_jwt_extended import create_access_token,get_jwt_identity, jwt_required
+import io
+import os
 import datetime
+from PIL import Image
+from base64 import encodebytes
 
 
 auth = Blueprint('auth', __name__)
@@ -33,6 +36,16 @@ def signup():
     detector.save_file(USER_IMAGE_PATH, user_image,"".join((id,USER_IMAGE_FILE_TYPE)))
     return ({'id':id}, 200)
 
+def get_response_image(image_path):
+    pil_img = Image.open(image_path, mode='r')  # reads the PIL image
+    byte_arr = io.BytesIO()
+    # convert the PIL image to byte array
+    pil_img.save(byte_arr, format='JPEG')
+    encoded_img = encodebytes(byte_arr.getvalue()).decode(
+        'ascii')  # encode as base64
+    return encoded_img
+
+
 @auth.route('/api/auth/login', methods=['POST'])
 def login():
     email = request.form.get('email')
@@ -48,6 +61,8 @@ def login():
         access_token = create_access_token(identity=str(user.id), expires_delta=expires)
         json = user.login_user_info_json()
         json['token'] = access_token
+        user_image_path = os.path.join(USER_IMAGE_PATH,"".join((str(user.id), USER_IMAGE_FILE_TYPE)))
+        json['user_image'] = get_response_image(user_image_path)
         return (json, 200)
     except:
         return ("User not found", 400)
