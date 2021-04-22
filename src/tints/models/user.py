@@ -50,6 +50,9 @@ class User(object):
 
  def signup(self):
     return DB.insert(collection=self.COLLECTION_NAME, data=self.json())
+   
+ def change_password(self, new_password):
+    return DB.update(collection=self.COLLECTION_NAME, filters={"_id" : self.id}, field={ '$set': {'password' : generate_password_hash(new_password).decode('utf8') }})
 
  def add_liked_lipstick(self, id, json):
     return DB.update(collection=self.COLLECTION_NAME, filters={"_id" : ObjectId(id)}, field= { '$push': { self.LIKE_LIPSTICK_FIELD_NAME : json } })

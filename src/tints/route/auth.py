@@ -80,6 +80,26 @@ def get_user_info_from_token_for_test():
     except:
         return ("Invalid Token or Expired", 400)
 
+@auth.route('/api/auth/change/password', methods=['PUT'])
+@jwt_required()
+@cross_origin()
+def change_password():
+    try:
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        user_id = get_jwt_identity()
+        user_info = User().get_user_info_by_id(user_id)
+        user = User()
+        user.set_user_info(user_info)
+        authorized = user.check_password(current_password)
+        if not authorized:
+            return ({'error':'Invalid current password'}, 401)
+        user.change_password(new_password)
+        return ("Changed password", 200)
+    except:
+        return ("Invalid Token or Expired", 400)
+
+
 # This method executes after every API request.
 @auth.after_request
 def after_request(response):
