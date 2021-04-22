@@ -62,7 +62,7 @@ def login():
         json = user.login_user_info_json()
         json['token'] = access_token
         user_image_path = os.path.join(USER_IMAGE_PATH,"".join((str(user.id), USER_IMAGE_FILE_TYPE)))
-        json['user_image'] = get_response_image(user_image_path)
+        json['base64_user_image'] = get_response_image(user_image_path)
         return (json, 200)
     except:
         return ("User not found", 400)
