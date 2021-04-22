@@ -76,7 +76,10 @@ def get_user_info_from_token_for_test():
         user_info = User().get_user_info_by_id(user_id)
         user = User()
         user.set_user_info(user_info)
-        return (user.login_user_info_json(), 200)
+        json = user.login_user_info_json()
+        user_image_path = os.path.join(USER_IMAGE_PATH,"".join((str(user.id), USER_IMAGE_FILE_TYPE)))
+        json['base64_user_image'] = get_response_image(user_image_path)
+        return (json, 200)
     except:
         return ("Invalid Token or Expired", 400)
 
