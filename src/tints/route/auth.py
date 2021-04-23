@@ -19,6 +19,18 @@ auth = Blueprint('auth', __name__)
 def before_request():
     print('Start Auth API request')
 
+@auth.route('/api/check/email/exist', methods=["GET"])
+def check_email_exit():
+    try:
+        email = request.form.get('email')
+        user = User(email=email)
+        if user.check_is_exist():
+            return ("Email already exist", 409)
+        else:
+            return ("This email avilable to register", 200)
+    except:
+        return ("Network error", 599)
+
 @auth.route('/api/auth/signup', methods=['POST'])
 def signup():
     email = request.form.get('email')
