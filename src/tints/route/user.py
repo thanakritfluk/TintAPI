@@ -1,9 +1,11 @@
+from bson import encode
 from flask import request, Blueprint
 from flask_cors import cross_origin
 from src.tints.models.user import User
-from flask_jwt_extended import create_access_token
+from src.tints.models.foundation import Foundation
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from src.tints.models.user import User
+from src.tints.utils.json_encode import JSONEncoder
 
 
 user = Blueprint('user', __name__)
@@ -79,6 +81,14 @@ def delete_like_blush():
     if not result['updatedExisting']:
         return ("Error Please Try Again", 400)
     return ("Delete successful", 200) 
+
+@user.route('/api/user/get/foundation/info', methods=['GET'])
+def get_foundation_info():
+    try:
+        result = Foundation.get_json_user_register_data()
+        return (JSONEncoder().encode(result), 200)
+    except:
+        return ("Please try again network error", 599)
 
 # This method executes after every API request.
 @user.after_request
