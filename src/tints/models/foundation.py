@@ -44,7 +44,7 @@ class Foundation(object):
     def get_json_user_register_data():
         result_json = {}
         brand_list = Foundation.distinct_brand()
-        result_json["brand_list"] = brand_list
+        result_json["brand_list"] = [item for item in brand_list if item != "null" and type(item) != type(None)]
         count = 0
         for brand in brand_list:
             cursor = DB.find(collection=COLLECTION_NAME,filters={"brand":brand})
