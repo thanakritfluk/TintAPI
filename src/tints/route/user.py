@@ -92,11 +92,13 @@ def get_foundation_info():
 
 # @user.route('/api/user/add/used/foundation', methods=['PUT'])
 # def add_used_foundation():
-#     try:
-#         result = Foundation.get_json_user_register_data()
-#         return (JSONEncoder().encode(result), 200)
-#     except:
-#         return ("Please try again network error", 599)
+#     # try:
+#     foundation_list = request.json
+#     # print(foundation_list)
+#     User().add_used_foundation(foundation_list)
+#     return ("Add used foundation list success", 200)
+#     # except:
+#     #     return ("Please try again network error", 599)
 
 # @user.route('/api/user/delete/used/foundation', methods=['PUT'])
 # def delete_used_foundation():

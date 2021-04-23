@@ -6,6 +6,7 @@ from src.tints.models.user import User
 from flask_jwt_extended import create_access_token,get_jwt_identity, jwt_required
 import io
 import os
+import json
 import datetime
 from PIL import Image
 from base64 import encodebytes
@@ -22,6 +23,9 @@ def before_request():
 def signup():
     email = request.form.get('email')
     password = request.form.get('password')
+    foundation_list = json.loads(request.form.get('foundation_list'))
+    if 'foundation_list' not in request.form:
+        return {"detail": "No foundation_list found"}, 400  
     if 'user_image' not in request.files:
         return {"detail": "No file found"}, 400  
     user = User(email=email,password=password)
@@ -30,6 +34,7 @@ def signup():
     user.hash_password()
     result = user.signup()
     id = str(result)
+    User().add_used_foundation(id,foundation_list)
     user_image = request.files['user_image']
     detector = DetectLandmarks()
     user_image = detector.convert_request_files_to_image(user_image)
