@@ -33,14 +33,7 @@ class Recommendation(DetectLandmarks):
         skin_type = load_model.predict([rgb])
         return int(skin_type)
 
-
-    def get_skin_type(self):
-        cheek_np = self.get_cheek_np(self.image, "RECOMMENDATION_FILE_READ")
-        CHEEK_NAME = "".join(("CheekArea_",self.user_id))
-        self.create_box(self.image, RECOMMENDATION_PATH, CHEEK_NAME, cheek_np)
-        img_path = pjoin(RECOMMENDATION_PATH,"".join((CHEEK_NAME,SAVE_FILE_TYPE)))
-        dominant_color = get_dominant_color_kmean(img_path)[0]
-        skin_type = self.get_skin_type_cluster(dominant_color)
+    def get_skin_type(self, skin_type):
         if skin_type == 0:
             return "Light"
         elif skin_type == 1:
@@ -49,6 +42,16 @@ class Recommendation(DetectLandmarks):
             return "Fair"
         else:
             return "Tan"
+
+
+    def get_user_skin_type(self):
+        cheek_np = self.get_cheek_np(self.image, "RECOMMENDATION_FILE_READ")
+        CHEEK_NAME = "".join(("CheekArea_",self.user_id))
+        self.create_box(self.image, RECOMMENDATION_PATH, CHEEK_NAME, cheek_np)
+        img_path = pjoin(RECOMMENDATION_PATH,"".join((CHEEK_NAME,SAVE_FILE_TYPE)))
+        dominant_color = get_dominant_color_kmean(img_path)[0]
+        skin_type = self.get_skin_type_cluster(dominant_color)
+        return self.get_skin_type(skin_type)
 
     
     def get_recommendation(self):
@@ -61,7 +64,7 @@ class Recommendation(DetectLandmarks):
 
         
 
-        skin_type = self.get_skin_type()
+        skin_type = self.get_user_skin_type()
         blush_list = Blush.get_blush_by_skin_type(skin_type)
         lipstick_list = Lipstick.get_lipstick_by_skin_type(skin_type)
         foundation_list = Foundation.get_foundation_by_skin_type(skin_type)

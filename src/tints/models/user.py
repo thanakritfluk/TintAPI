@@ -10,6 +10,7 @@ class User(object):
  LIKE_LIPSTICK_FIELD_NAME = 'likedLip'
  LIKE_FOUNDATION_FIELD_NAME = 'likedFoundation'
  LIKE_BLUSH_FIELD_NAME = 'likedBlush'
+ USED_FOUNDATION_LIST = 'foundationList'
 
  def __init__(self,id = None,email=None, password=None, foundationList = [], likedLip = [], likedFoundation= [], likedBlush= []):
     self.id = id
@@ -71,6 +72,12 @@ class User(object):
 
  def delete_liked_blush(self, id, json):
     return DB.update(collection=self.COLLECTION_NAME, filters={"_id" : ObjectId(id)}, field= { '$pull': { self.LIKE_BLUSH_FIELD_NAME : json } })
+
+ def add_used_foundation(self, id, json):
+    return DB.update(collection=self.COLLECTION_NAME, filters={"_id" : ObjectId(id)}, field= { '$push': { self.USED_FOUNDATION_LIST : json } })
+
+ def delete_used_foundation(self, id, json):
+    return DB.update(collection=self.COLLECTION_NAME, filters={"_id" : ObjectId(id)}, field= { '$pull': { self.USED_FOUNDATION_LIST : json } })
 
  def json(self):
      return {'email':self.email,'password': self.password,'foundationList': [], 'likedLip':[], 'likedFoundation': [], 'likedBlush': []}

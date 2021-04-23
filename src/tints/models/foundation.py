@@ -46,7 +46,7 @@ class Foundation(object):
         brand_list = Foundation.distinct_brand()
         result_json["brand_list"] = [item for item in brand_list if item != "null" and type(item) != type(None)]
         count = 0
-        for brand in brand_list:
+        for brand in result_json["brand_list"]:
             cursor = DB.find(collection=COLLECTION_NAME,filters={"brand":brand})
             json_docs = []
             for doc in cursor:
