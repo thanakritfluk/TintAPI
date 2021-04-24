@@ -71,7 +71,6 @@ class Recommendation(DetectLandmarks):
         if list_foundation:
             list_skin_type = []
             list_skin_type.append(skin_type)
-            list_skin_type.append("Medium")
             for selected in list_foundation:
                 hex_value = selected['colorSelected']['hex_value']
                 rgb_value = ImageColor.getcolor(hex_value, "RGB")
