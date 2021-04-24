@@ -11,6 +11,7 @@ class User(object):
  LIKE_FOUNDATION_FIELD_NAME = 'likedFoundation'
  LIKE_BLUSH_FIELD_NAME = 'likedBlush'
  USED_FOUNDATION_LIST = 'foundationList'
+ COLOR_SELECTED_FIELD = 'colorSelected'
 
  def __init__(self,id = None,email=None, password=None, foundationList = [], likedLip = [], likedFoundation= [], likedBlush= []):
     self.id = id
@@ -72,6 +73,9 @@ class User(object):
 
  def delete_liked_blush(self, id, json):
     return DB.update(collection=self.COLLECTION_NAME, filters={"_id" : ObjectId(id)}, field= { '$pull': { self.LIKE_BLUSH_FIELD_NAME : json } })
+
+ def get_used_foundation(self):
+    return list(DB.find(collection=self.COLLECTION_NAME, filters={"_id" : ObjectId(self.id)}, field={self.USED_FOUNDATION_LIST:1}))
 
  def add_used_foundation(self,id, list_foundation):
     for foundation in list_foundation:

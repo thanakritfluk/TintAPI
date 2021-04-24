@@ -19,7 +19,7 @@ auth = Blueprint('auth', __name__)
 def before_request():
     print('Start Auth API request')
 
-@auth.route('/api/check/email/exist', methods=["GET"])
+@auth.route('/api/check/email/exist', methods=["POST"])
 def check_email_exit():
     try:
         email = request.form.get('email')

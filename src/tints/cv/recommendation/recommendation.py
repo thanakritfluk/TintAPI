@@ -1,10 +1,13 @@
+from PIL import ImageColor
 from src.tints.cv.detector import DetectLandmarks
 from src.tints.models.lipstick import Lipstick
 from src.tints.models.foundation import Foundation
 from src.tints.models.blush import Blush
+from src.tints.models.user import User
 from src.tints.settings import RECOMMENDATION_PATH, USER_IMAGE_PATH, SAVE_FILE_TYPE, USER_IMAGE_FILE_TYPE,SKIN_CLUSTER_MODEL_PATH
 from src.tints.utils.color import compare_delta_e,get_dominant_color_kmean
 from os.path import join as pjoin
+from collections import Counter
 import cv2
 import pickle
 
@@ -61,10 +64,21 @@ class Recommendation(DetectLandmarks):
         # 3. check ว่า มี foundation ส่งมามั้ย 
             #   ถ้าไม่ ให้เอา skintype ที่ได้จาก รูป user ไปหา recommend เลย 
             #   ถ้ามี ให้เอา สี foundation ไปเข้า model หาสีผิว >> เก็บเข้า list >> Check majority vote นับ skintype ที่มากสุด จากใน list เอาไป recommend
-
-        
-
         skin_type = self.get_user_skin_type()
+        user = User(self.user_id)
+        list_foundation = user.get_used_foundation()
+        list_foundation = list_foundation[0]['foundationList']
+        if list_foundation:
+            list_skin_type = []
+            list_skin_type.append(skin_type)
+            list_skin_type.append("Medium")
+            for selected in list_foundation:
+                hex_value = selected['colorSelected']['hex_value']
+                rgb_value = ImageColor.getcolor(hex_value, "RGB")
+                list_skin_type.append(self.get_skin_type(self.get_skin_type_cluster(rgb_value)))
+            list_skin_type = Counter(list_skin_type)
+            skin_type = list_skin_type.most_common(1)[0][0]
+            print("User skin type when compared with used foundation: {}".format(skin_type))
         blush_list = Blush.get_blush_by_skin_type(skin_type)
         lipstick_list = Lipstick.get_lipstick_by_skin_type(skin_type)
         foundation_list = Foundation.get_foundation_by_skin_type(skin_type)
