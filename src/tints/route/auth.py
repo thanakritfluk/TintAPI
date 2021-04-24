@@ -8,6 +8,7 @@ import io
 import os
 import json
 import datetime
+import numpy as np
 from PIL import Image
 from base64 import encodebytes
 
@@ -138,6 +139,23 @@ def change_user_image():
     except:
         return ("Invalid Token or Expired", 400)
 
+
+@auth.route('/api/auth/check/valid/user/image', methods=['POST'])
+def check_user_image():
+    try:
+        if 'user_image' not in request.files:
+            return {"detail": "No image file found"}, 400
+        user_image = request.files['user_image']
+        detector = DetectLandmarks()
+        user_image = detector.convert_request_files_to_image(user_image)
+        check_is_face = detector.get_landmarks(user_image)
+        print("Check type result=",type(check_is_face))
+        if isinstance(check_is_face, (np.ndarray, np.generic)):
+            return ("Valid User Image", 200)
+        else:
+            return ("Invalid User Image", 400)
+    except:
+        return ("Invalid User Image", 400)
 
 # This method executes after every API request.
 @auth.after_request

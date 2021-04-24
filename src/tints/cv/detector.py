@@ -24,6 +24,19 @@ class DetectLandmarks(object):
         self.predictor = dlib.shape_predictor(PREDICTOR_PATH)
         self.detector = dlib.get_frontal_face_detector()
 
+
+    def check_is_face_exist(self, image):
+        try:
+            rects = self.detector(image,1)
+            size = len(rects)
+            print("Size =",size)
+            if size == 0:
+                return False
+            else:
+                return True
+        except:
+            return False
+
     def get_landmarks(self, image):
         """ Extract the landmarks from a given image.
         Returns `None` if no landmarks found.
