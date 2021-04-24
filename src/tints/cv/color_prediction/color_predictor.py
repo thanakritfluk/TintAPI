@@ -9,6 +9,7 @@ from src.tints.models.lipstick import Lipstick
 from src.tints.models.foundation import Foundation
 from src.tints.models.blush import Blush
 from src.tints.cv.detector import DetectLandmarks
+from src.tints.cv.recommendation.recommendation import Recommendation
 from src.tints.utils.color import compare_delta_e,get_dominant_color_kmean
 from src.tints.settings import COLOR_PREDICTION_INPUT,COLOR_PREDICTION_OUTPUT, COLOR_COMPARE_VAL, METHOD_NUM, RETURN_SIZE,SKIN_CLUSTER_MODEL_PATH, SAVE_FILE_TYPE
 
@@ -95,6 +96,16 @@ class ColorPredictor(DetectLandmarks):
         return self.get_custom_return_size(similar_lipstick)
 
 
+    def get_skin_type(self, skin_type):
+        if skin_type == 0:
+            return "Light"
+        elif skin_type == 1:
+            return "Medium"
+        elif skin_type == 2:
+            return "Fair"
+        else:
+            return "Tan"
+
     def get_skin_type_cluster(self, rgb):
         """ 
         Return skin type divied in 4 category:
@@ -115,15 +126,17 @@ class ColorPredictor(DetectLandmarks):
         dominant_color_list = get_dominant_color_kmean(img_path)
         similar_foundation = []
         foundation_list = []
+        ref_skin_type = None
         for dominant_color in dominant_color_list:
             skin_cluster = self.get_skin_type_cluster(dominant_color)
             if not foundation_list: 
                 foundation_list = Foundation.get_foundation_by_skin_cluster(skin_cluster)
             similar_foundation = self.get_prediction_list(similar_foundation, foundation_list, dominant_color)
             if similar_foundation:
+                ref_skin_type = self.get_skin_type(skin_cluster)
                 break
         self.print_result(5,similar_foundation)
-        return self.get_custom_return_size(similar_foundation)
+        return self.get_custom_return_size(similar_foundation), ref_skin_type
         
 
     def get_blush_predict(self, blush_color):
@@ -135,9 +148,16 @@ class ColorPredictor(DetectLandmarks):
         self.print_result(5,similar_blush)
         return self.get_custom_return_size(similar_blush)
 
+    def get_user_skin_type(self):
+        recommendation = Recommendation(self.user_id)
+        recommendation.set_image()
+        return recommendation.get_user_skin_type()
+
 
     def get_all_prediction(self,blush_color):
         self.save_localize_lanmark_image(self.image,COLOR_PREDICTION_INPUT,"".join(("Lanmark_",self.user_id)),self.flag)
-        return {"Lipstick":self.get_lipstick_predict(),"Foundation":self.get_foundation_predict(),"Blush":self.get_blush_predict(blush_color)}
+        foundation_predict_result = self.get_foundation_predict()
+        ref_compare_user_image = {"Ref_skin_type": foundation_predict_result[1], "User_skin_type": self.get_user_skin_type()}
+        return {"Lipstick":self.get_lipstick_predict(),"Foundation":foundation_predict_result[0],"Blush":self.get_blush_predict(blush_color), "ref_compare_user_skin_type": ref_compare_user_image}
         
 
