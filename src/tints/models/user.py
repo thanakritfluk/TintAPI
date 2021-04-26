@@ -89,4 +89,4 @@ class User(object):
      return {'email':self.email,'password': self.password,'foundationList': [], 'likedLip':[], 'likedFoundation': [], 'likedBlush': []}
 
  def login_user_info_json(self):
-     return {'email':self.email, 'foundationList':  self.foundationList, 'likedLip':self.likedLip, 'likedFoundation': self.likedFoundation, 'likedBlush': self.likedBlush}
+     return {'email':self.email, 'foundationList':  self.foundationList[::-1], 'likedLip':self.likedLip[::-1], 'likedFoundation': self.likedFoundation[::-1], 'likedBlush': self.likedBlush[::-1]}
