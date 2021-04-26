@@ -1,7 +1,7 @@
 import io
 import os
 from flask import Flask, request, send_from_directory, jsonify, Blueprint
-from flask_cors import cross_origin
+from flask_cors import cross_origin, CORS
 from PIL import Image
 from base64 import encodebytes
 from src.tints.utils.json_encode import JSONEncoder
@@ -10,7 +10,7 @@ from src.tints.settings import SIMULATOR_INPUT, SIMULATOR_OUTPUT
 
 
 simulation = Blueprint('simulation', __name__)
-
+CORS(simulation)
 # This method executes before any API request
 
 
@@ -35,7 +35,6 @@ def get_response_image(image_path):
 
 
 @simulation.route('/api/simulator/lip', methods=['POST'])
-@cross_origin()
 def simulator_lip():
     # check if the post request has the file part
     if 'user_image' not in request.files:
@@ -71,7 +70,6 @@ def simulator_lip():
 
 
 @simulation.route('/api/simulator/blush', methods=['POST'])
-@cross_origin()
 def simulator_value():
     # check if the post request has the file part
     if 'user_image' not in request.files:
@@ -111,7 +109,6 @@ def simulator_value():
 
 
 @simulation.route('/api/simulator/foundation', methods=['POST'])
-@cross_origin()
 def foundation_value():
     if 'user_image' not in request.files:
         return {"detail": "No file found"}, 400

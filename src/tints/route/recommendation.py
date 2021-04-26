@@ -1,5 +1,5 @@
 from flask import request, Blueprint
-from flask_cors import cross_origin
+from flask_cors import cross_origin, CORS
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from src.tints.utils.json_encode import JSONEncoder
 from src.tints.settings import USER_IMAGE_PATH
@@ -7,6 +7,7 @@ from src.tints.cv.recommendation.recommendation import Recommendation
 
 
 recommendation = Blueprint('recommendation', __name__)
+CORS(recommendation)
 
 # This method executes before any API request
 @recommendation.before_request
@@ -16,7 +17,6 @@ def before_request():
 
 @recommendation.route('/api/get/recommendation')
 @jwt_required()
-@cross_origin()
 def get_recommendation():
     try:
         user_id = get_jwt_identity()

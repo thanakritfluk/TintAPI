@@ -1,5 +1,5 @@
 from flask import request, Blueprint, send_file
-from flask_cors import cross_origin
+from flask_cors import cross_origin,CORS
 from src.tints.models.lipstick import Lipstick
 from src.tints.cv.color_prediction.color_predictor import ColorPredictor
 from src.tints.cv.detector import DetectLandmarks
@@ -12,7 +12,7 @@ from flask_jwt_extended import get_jwt_identity
 
 
 color_prediction = Blueprint('color_prediction', __name__)
-
+CORS(color_prediction)
 # This method executes before any API request
 
 
@@ -45,7 +45,6 @@ def get_lipstick_brand_list():
 
 @color_prediction.route('/api/v1/get/prediction/color', methods=['POST'])
 @jwt_required()
-@cross_origin()
 def prediction():
     current_user = get_jwt_identity()
     # check if the post request has the file part
@@ -70,7 +69,6 @@ def prediction():
 
 @color_prediction.route('/api/v2/get/cheek/image', methods=['POST'])
 @jwt_required()
-@cross_origin()
 def get_cheek_image():
     try:
         current_user = get_jwt_identity()
@@ -103,7 +101,6 @@ def get_cheek_image():
 
 @color_prediction.route('/api/v2/get/prediction/color', methods=['POST'])
 @jwt_required()
-@cross_origin()
 def get_color_prediction():
     try:
         current_user = get_jwt_identity()
