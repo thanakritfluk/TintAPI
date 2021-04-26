@@ -15,6 +15,7 @@ from src.tints.route.user import *
 load_dotenv()
 # App reference
 app = Flask(__name__)
+CORS(app)
 app.debug = True
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
