@@ -45,10 +45,10 @@ class User(object):
      self.id = user_info['_id']
      self.email = user_info['email']
      self.password = user_info['password']
-     self.foundationList = user_info['foundationList']
-     self.likedLip = user_info['likedLip']
-     self.likedFoundation = user_info['likedFoundation']
-     self.likedBlush = user_info['likedBlush']
+     self.foundationList = (user_info['foundationList'])[::-1]
+     self.likedLip = (user_info['likedLip'])[::-1]
+     self.likedFoundation = (user_info['likedFoundation'])[::-1]
+     self.likedBlush = (user_info['likedBlush'])[::-1]
 
  def signup(self):
     return DB.insert(collection=self.COLLECTION_NAME, data=self.json())
@@ -89,4 +89,4 @@ class User(object):
      return {'email':self.email,'password': self.password,'foundationList': [], 'likedLip':[], 'likedFoundation': [], 'likedBlush': []}
 
  def login_user_info_json(self):
-     return {'email':self.email, 'foundationList':  self.foundationList[::-1], 'likedLip':self.likedLip[::-1], 'likedFoundation': self.likedFoundation[::-1], 'likedBlush': self.likedBlush[::-1]}
+     return {'email':self.email, 'foundationList':  self.foundationList, 'likedLip':self.likedLip, 'likedFoundation': self.likedFoundation, 'likedBlush': self.likedBlush}
