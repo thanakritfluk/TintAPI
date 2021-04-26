@@ -30,4 +30,6 @@ def get_recommendation():
 # This method executes after every API request.
 @recommendation.after_request
 def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
     return response

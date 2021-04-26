@@ -118,4 +118,6 @@ def get_color_prediction():
 # This method executes after every API request.
 @color_prediction.after_request
 def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
     return response

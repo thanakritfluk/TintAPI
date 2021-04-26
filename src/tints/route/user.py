@@ -105,4 +105,6 @@ def get_foundation_info():
 # This method executes after every API request.
 @user.after_request
 def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
     return response

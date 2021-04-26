@@ -150,4 +150,6 @@ def foundation_value():
 
 @simulation.after_request
 def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
     return response

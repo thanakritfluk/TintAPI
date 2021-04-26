@@ -161,4 +161,6 @@ def check_user_image():
 # This method executes after every API request.
 @auth.after_request
 def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
     return response
