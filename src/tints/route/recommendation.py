@@ -18,10 +18,13 @@ def before_request():
 @jwt_required()
 @cross_origin()
 def get_recommendation():
-    user_id = get_jwt_identity()
-    recommendations = Recommendation(str(user_id))
-    result = recommendations.get_recommendation()
-    return (JSONEncoder().encode(result), 200)
+    try:
+        user_id = get_jwt_identity()
+        recommendations = Recommendation(str(user_id))
+        result = recommendations.get_recommendation()
+        return (JSONEncoder().encode(result), 200)
+    except Exception as e:
+        return {"Error": e}, 400
 
 
 # This method executes after every API request.

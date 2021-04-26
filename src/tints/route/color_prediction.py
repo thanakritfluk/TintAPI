@@ -72,28 +72,31 @@ def prediction():
 @jwt_required()
 @cross_origin()
 def get_cheek_image():
-    current_user = get_jwt_identity()
-    print("Current user =", current_user)
-    if 'ref_face' not in request.files:
-        return {"detail": "No file found"}, 400
-    ref_face = request.files['ref_face']
-    user_id = current_user
-    detector = DetectLandmarks()
-    ref_face_img = detector.convert_request_files_to_image(ref_face)
-    cheek_np = detector.get_cheek_np(ref_face_img)
-    base_image_name = "".join((user_id, "_", time.strftime('%H-%M-%S')))
-    save_image_name = "".join((base_image_name, SAVE_FILE_TYPE))
-    save_image_original_name = "".join((user_id, SAVE_FILE_TYPE))
-    detector.save_file(COLOR_PREDICTION_INPUT, ref_face_img,
-                       save_image_original_name)
-    detector.create_box(ref_face_img, COLOR_PREDICTION_INPUT,
-                        base_image_name, cheek_np)
-    image_path = pjoin(COLOR_PREDICTION_INPUT, save_image_name)
-    response = send_file(image_path, mimetype='image/jpeg',
-                         as_attachment=True)
-    response.headers["x-suggested-filename"] = save_image_name
+    try:
+        current_user = get_jwt_identity()
+        print("Current user =", current_user)
+        if 'ref_face' not in request.files:
+            return {"detail": "No file found"}, 400
+        ref_face = request.files['ref_face']
+        user_id = current_user
+        detector = DetectLandmarks()
+        ref_face_img = detector.convert_request_files_to_image(ref_face)
+        cheek_np = detector.get_cheek_np(ref_face_img)
+        base_image_name = "".join((user_id, "_", time.strftime('%H-%M-%S')))
+        save_image_name = "".join((base_image_name, SAVE_FILE_TYPE))
+        save_image_original_name = "".join((user_id, SAVE_FILE_TYPE))
+        detector.save_file(COLOR_PREDICTION_INPUT, ref_face_img,
+                        save_image_original_name)
+        detector.create_box(ref_face_img, COLOR_PREDICTION_INPUT,
+                            base_image_name, cheek_np)
+        image_path = pjoin(COLOR_PREDICTION_INPUT, save_image_name)
+        response = send_file(image_path, mimetype='image/jpeg',
+                            as_attachment=True)
+        response.headers["x-suggested-filename"] = save_image_name
 
-    return response
+        return response
+    except Exception as e:
+        return {"Error": e}, 400
 
 # Method 2 required cheeck color after user pickle from cheek image
 
@@ -102,14 +105,17 @@ def get_cheek_image():
 @jwt_required()
 @cross_origin()
 def get_color_prediction():
-    current_user = get_jwt_identity()
-    user_id = current_user
-    filename = "".join((user_id, SAVE_FILE_TYPE))
-    color_prediction = ColorPredictor(user_id, "COLOR_PREDICTION_FILE_READ")
-    color_prediction.read_image_from_storage(filename)
-    result = color_prediction.get_all_prediction(
-        request.form.get('blush_hex_color'))
-    return (JSONEncoder().encode(result), 200)
+    try:
+        current_user = get_jwt_identity()
+        user_id = current_user
+        filename = "".join((user_id, SAVE_FILE_TYPE))
+        color_prediction = ColorPredictor(user_id, "COLOR_PREDICTION_FILE_READ")
+        color_prediction.read_image_from_storage(filename)
+        result = color_prediction.get_all_prediction(
+            request.form.get('blush_hex_color'))
+        return (JSONEncoder().encode(result), 200)
+    except Exception as e:
+        return {"Error": e}, 400
 
 
 # This method executes after every API request.

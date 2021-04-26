@@ -34,25 +34,28 @@ def check_email_exit():
 
 @auth.route('/api/auth/signup', methods=['POST'])
 def signup():
-    email = request.form.get('email')
-    password = request.form.get('password')
-    foundation_list = json.loads(request.form.get('foundation_list'))
-    if 'foundation_list' not in request.form:
-        return {"detail": "No foundation_list found"}, 400  
-    if 'user_image' not in request.files:
-        return {"detail": "No file found"}, 400  
-    user = User(email=email,password=password)
-    if user.check_is_exist():
-        return ("User already exist", 400)
-    user.hash_password()
-    result = user.signup()
-    id = str(result)
-    User().add_used_foundation(id,foundation_list)
-    user_image = request.files['user_image']
-    detector = DetectLandmarks()
-    user_image = detector.convert_request_files_to_image(user_image)
-    detector.save_file(USER_IMAGE_PATH, user_image,"".join((id,USER_IMAGE_FILE_TYPE)))
-    return ({'id':id}, 200)
+    try:
+        email = request.form.get('email')
+        password = request.form.get('password')
+        foundation_list = json.loads(request.form.get('foundation_list'))
+        if 'foundation_list' not in request.form:
+            return {"detail": "No foundation_list found"}, 400  
+        if 'user_image' not in request.files:
+            return {"detail": "No file found"}, 400  
+        user = User(email=email,password=password)
+        if user.check_is_exist():
+            return ("User already exist", 400)
+        user.hash_password()
+        result = user.signup()
+        id = str(result)
+        User().add_used_foundation(id,foundation_list)
+        user_image = request.files['user_image']
+        detector = DetectLandmarks()
+        user_image = detector.convert_request_files_to_image(user_image)
+        detector.save_file(USER_IMAGE_PATH, user_image,"".join((id,USER_IMAGE_FILE_TYPE)))
+        return ({'id':id}, 200)
+    except Exception as e:
+        return {"Error": e}, 400
 
 def get_response_image(image_path):
     pil_img = Image.open(image_path, mode='r')  # reads the PIL image
@@ -82,8 +85,8 @@ def login():
         user_image_path = os.path.join(USER_IMAGE_PATH,"".join((str(user.id), USER_IMAGE_FILE_TYPE)))
         json['base64_user_image'] = get_response_image(user_image_path)
         return (json, 200)
-    except:
-        return ("User not found", 400)
+    except Exception as e:
+        return {"Error": e}, 400
     
 @auth.route('/api/auth/test/get/user_info/token', methods=['GET'])
 @jwt_required()
@@ -98,8 +101,8 @@ def get_user_info_from_token_for_test():
         user_image_path = os.path.join(USER_IMAGE_PATH,"".join((str(user.id), USER_IMAGE_FILE_TYPE)))
         json['base64_user_image'] = get_response_image(user_image_path)
         return (json, 200)
-    except:
-        return ("Invalid Token or Expired", 400)
+    except Exception as e:
+        return {"Error": e}, 400
 
 @auth.route('/api/auth/change/password', methods=['PUT'])
 @jwt_required()
@@ -117,8 +120,8 @@ def change_password():
             return ({'error':'Invalid current password'}, 401)
         user.change_password(new_password)
         return ("Changed password", 200)
-    except:
-        return ("Invalid Token or Expired", 400)
+    except Exception as e:
+        return {"Error": e}, 400
 
 @auth.route('/api/auth/change/user/image', methods=['PUT'])
 @jwt_required()
@@ -136,8 +139,8 @@ def change_user_image():
         new_user_image = detector.convert_request_files_to_image(user_image)
         detector.save_file(USER_IMAGE_PATH, new_user_image,"".join((user_id,USER_IMAGE_FILE_TYPE)))
         return ("Changed user image", 200)
-    except:
-        return ("Invalid Token or Expired", 400)
+    except Exception as e:
+        return {"Error": e}, 400
 
 
 @auth.route('/api/auth/check/valid/user/image', methods=['POST'])
@@ -154,8 +157,8 @@ def check_user_image():
             return ("Valid User Image", 200)
         else:
             return ("Invalid User Image", 400)
-    except:
-        return ("Invalid User Image", 400)
+    except Exception as e:
+        return {"Error": e}, 400
 
 # This method executes after every API request.
 @auth.after_request
