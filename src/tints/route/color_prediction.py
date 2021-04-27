@@ -12,7 +12,6 @@ from flask_jwt_extended import get_jwt_identity
 
 
 color_prediction = Blueprint('color_prediction', __name__)
-CORS(color_prediction,resources={r"/*": {"origins": "*"}})
 # This method executes before any API request
 
 

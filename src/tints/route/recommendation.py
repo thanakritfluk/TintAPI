@@ -7,7 +7,6 @@ from src.tints.cv.recommendation.recommendation import Recommendation
 
 
 recommendation = Blueprint('recommendation', __name__)
-CORS(recommendation,resources={r"/*": {"origins": "*"}})
 
 # This method executes before any API request
 @recommendation.before_request

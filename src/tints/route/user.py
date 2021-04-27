@@ -9,7 +9,6 @@ from src.tints.utils.json_encode import JSONEncoder
 
 
 user = Blueprint('user', __name__)
-CORS(user,resources={r"/*": {"origins": "*"}})
 
 @user.before_request
 def before_request():

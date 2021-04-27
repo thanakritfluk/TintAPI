@@ -15,7 +15,6 @@ from base64 import encodebytes
 
 
 auth = Blueprint('auth', __name__)
-CORS(auth,resources={r"/*": {"origins": "*"}})
 
 @auth.before_request
 def before_request():

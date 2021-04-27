@@ -17,11 +17,13 @@ load_dotenv()
 app = Flask(__name__)
 
 CORS(app)
-cors = CORS(app, resources={
-     r"/*":{
-          "origins": "*"
-     }
-})
+# cors = CORS(app, resources={
+#      r"/*":{
+#           "origins": "*"
+#      }
+# })
+
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 app.debug = True
 bcrypt = Bcrypt(app)

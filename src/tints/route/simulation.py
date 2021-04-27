@@ -10,7 +10,6 @@ from src.tints.settings import SIMULATOR_INPUT, SIMULATOR_OUTPUT
 
 
 simulation = Blueprint('simulation', __name__)
-CORS(simulation,resources={r"/*": {"origins": "*"}})
 # This method executes before any API request
 
 
