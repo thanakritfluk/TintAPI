@@ -13,6 +13,7 @@ services:
     - DELETE
     allow_origins:
     - prefix: https://tints-application.herokuapp.com
+    - prefix: http://localhost:8080
   environment_slug: python
   envs:
   - key: MONGO_URI
@@ -26,7 +27,7 @@ services:
     deploy_on_push: true
     repo: thanakritfluk/TintAPI
   http_port: 8080
-  instance_count: 1
+  instance_count: 2
   instance_size_slug: professional-xs
   name: tint-api
   routes:
