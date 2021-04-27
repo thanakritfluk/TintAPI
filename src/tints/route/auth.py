@@ -152,6 +152,11 @@ def change_user_image():
         user.set_user_info(user_info)
         detector = DetectLandmarks()
         new_user_image = detector.convert_request_files_to_image(user_image)
+        old_image_path = os.path.join(USER_IMAGE_PATH,"".join((user_id,USER_IMAGE_FILE_TYPE)))
+        if os.path.exists(old_image_path):
+            os.remove(old_image_path)
+        else:
+            print("The image file does not exist")
         detector.save_file(USER_IMAGE_PATH, new_user_image,"".join((user_id,USER_IMAGE_FILE_TYPE)))
         return ("Changed user image", 200)
     except Exception as e:
