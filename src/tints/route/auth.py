@@ -38,8 +38,7 @@ def check_email_exit():
         return ("Network error", 599)
 
 @auth.route('/api/auth/signup', methods=['POST'])
-@async_action
-async def signup():
+def signup():
     try:
         email = request.form.get('email')
         password = request.form.get('password')
@@ -68,7 +67,7 @@ async def signup():
         user_image = detector.convert_request_files_to_image(user_image)
         # print("Image =",user_image)
         detector.save_file(USER_IMAGE_PATH, user_image,"".join((id,USER_IMAGE_FILE_TYPE)))
-        await asyncio.sleep(8)
+        # await asyncio.sleep(8)
         return ({'id':id}, 200)
     except Exception as e:
         return {"Error": e}, 400

@@ -106,15 +106,14 @@ def get_cheek_image():
 @color_prediction.route('/api/v2/get/prediction/color', methods=['POST'])
 @jwt_required()
 @cross_origin()
-@async_action()
-async def get_color_prediction():
+def get_color_prediction():
     try:
         current_user = get_jwt_identity()
         user_id = current_user
         filename = "".join((user_id, SAVE_FILE_TYPE))
         color_prediction = ColorPredictor(user_id, "COLOR_PREDICTION_FILE_READ")
         color_prediction.read_image_from_storage(filename)
-        await asyncio.sleep(4)
+        # await asyncio.sleep(4)
         print("Start get prediction color id:{}, filename:{}, blush color:{}".format(user_id, filename,request.form.get('blush_hex_color')))
         result = color_prediction.get_all_prediction(
             request.form.get('blush_hex_color'))
