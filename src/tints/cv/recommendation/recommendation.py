@@ -77,7 +77,7 @@ class Recommendation(DetectLandmarks):
                 list_skin_type.append(self.get_skin_type(self.get_skin_type_cluster(rgb_value)))
             list_skin_type = Counter(list_skin_type)
             skin_type = list_skin_type.most_common(1)[0][0]
-            print("User skin type when compared with used foundation: {}".format(skin_type))
+            # print("User skin type when compared with used foundation: {}".format(skin_type))
         blush_list = Blush.get_blush_by_skin_type(skin_type)
         lipstick_list = Lipstick.get_lipstick_by_skin_type(skin_type)
         foundation_list = Foundation.get_foundation_by_skin_type(skin_type)

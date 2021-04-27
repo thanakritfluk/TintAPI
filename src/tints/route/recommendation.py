@@ -23,6 +23,7 @@ def get_recommendation():
         user_id = get_jwt_identity()
         recommendations = Recommendation(str(user_id))
         result = recommendations.get_recommendation()
+        print("Start recommendation id:{}, recommend list:{}",user_id, result)
         return (JSONEncoder().encode(result), 200)
     except Exception as e:
         return {"Error": e}, 400

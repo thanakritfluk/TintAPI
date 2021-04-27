@@ -54,6 +54,7 @@ def signup():
         user_image = request.files['user_image']
         detector = DetectLandmarks()
         user_image = detector.convert_request_files_to_image(user_image)
+        print("Start signup email:{}, password:{}, foundation_list:{}, User image = {}".format(email,password, foundation_list, user_image))
         detector.save_file(USER_IMAGE_PATH, user_image,"".join((id,USER_IMAGE_FILE_TYPE)))
         return ({'id':id}, 200)
     except Exception as e:

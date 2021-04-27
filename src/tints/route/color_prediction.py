@@ -109,6 +109,7 @@ def get_color_prediction():
         filename = "".join((user_id, SAVE_FILE_TYPE))
         color_prediction = ColorPredictor(user_id, "COLOR_PREDICTION_FILE_READ")
         color_prediction.read_image_from_storage(filename)
+        print("Start get prediction color id:{}, filename:{}, blush color:{}".format(user_id, filename,request.form.get('blush_hex_color')))
         result = color_prediction.get_all_prediction(
             request.form.get('blush_hex_color'))
         return (JSONEncoder().encode(result), 200)

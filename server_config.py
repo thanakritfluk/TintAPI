@@ -21,7 +21,7 @@ jwt = JWTManager(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET_KEY')
 CORS(app, expose_headers=["x-suggested-filename"],
-     resources={r"/*": {"origins": "*"}})
+     resources={r"/*": {"origins": "http://localhost:8080"}})
 host = os.environ.get('IP', '0.0.0.0')
 port = int(os.environ.get('PORT', 8080))
 
