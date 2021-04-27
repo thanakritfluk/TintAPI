@@ -29,7 +29,7 @@ class DetectLandmarks(object):
         try:
             rects = self.detector(image,1)
             size = len(rects)
-            print("Size =",size)
+            print("check_is_face_exist size =",size)
             if size == 0:
                 return False
             else:
@@ -127,7 +127,7 @@ class DetectLandmarks(object):
         np_list1 = np.concatenate(
             (lanmarks[11], lanmarks[12], lanmarks[13], lanmarks[14], lanmarks[15], lanmarks[35], lanmarks[53], lanmarks[54]))
 
-        print(np_list1)
+        # print(np_list1)
         return np_list
 
     def get_lip_np(self, image, flag=None):
