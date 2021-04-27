@@ -1,4 +1,5 @@
 from flask import request, Blueprint
+from flask.helpers import make_response
 from flask_cors import cross_origin
 from src.tints.settings import USER_IMAGE_PATH, USER_IMAGE_FILE_TYPE
 from src.tints.cv.detector import DetectLandmarks
@@ -8,12 +9,16 @@ import io
 import os
 import json
 import datetime
+from src.tints.utils.async_function import async_action
+import asyncio
 import numpy as np
 from PIL import Image
 from base64 import encodebytes
 
 
 auth = Blueprint('auth', __name__)
+
+
 
 
 @auth.before_request
@@ -33,11 +38,17 @@ def check_email_exit():
         return ("Network error", 599)
 
 @auth.route('/api/auth/signup', methods=['POST'])
-def signup():
+@async_action
+async def signup():
     try:
         email = request.form.get('email')
         password = request.form.get('password')
-        foundation_list = json.loads(request.form.get('foundation_list'))
+        try:
+            foundation_list = json.loads(request.form.get('foundation_list'))
+        except:
+            pass
+        finally:
+            foundation_list = []
         if 'foundation_list' not in request.form:
             return {"detail": "No foundation_list found"}, 400  
         if 'user_image' not in request.files:
@@ -49,11 +60,15 @@ def signup():
         result = user.signup()
         id = str(result)
         User().add_used_foundation(id,foundation_list)
+        print("Added used foundation")
         user_image = request.files['user_image']
+        print("Request Image =",user_image)
         print("Start signup email:{}, password:{}, foundation_list:{}, User image = {}".format(email,password, foundation_list, user_image))
         detector = DetectLandmarks()
         user_image = detector.convert_request_files_to_image(user_image)
+        # print("Image =",user_image)
         detector.save_file(USER_IMAGE_PATH, user_image,"".join((id,USER_IMAGE_FILE_TYPE)))
+        await asyncio.sleep(8)
         return ({'id':id}, 200)
     except Exception as e:
         return {"Error": e}, 400

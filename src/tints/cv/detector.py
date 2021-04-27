@@ -7,7 +7,7 @@ from scipy import interpolate
 from imutils import face_utils
 from os.path import join as pjoin
 from src.tints.settings import COLOR_PREDICTION_INPUT, COLOR_PREDICTION_OUTPUT, SHAPE_68_PATH,SHAPE_81_PATH, SAVE_FILE_TYPE
-
+import asyncio
 
 PREDICTOR_PATH = SHAPE_81_PATH
 

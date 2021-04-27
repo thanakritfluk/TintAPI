@@ -78,8 +78,9 @@ class User(object):
     return list(DB.find(collection=self.COLLECTION_NAME, filters={"_id" : ObjectId(self.id)}, field={self.USED_FOUNDATION_LIST:1}))
 
  def add_used_foundation(self,id, list_foundation):
-    for foundation in list_foundation:
-        DB.update(collection=self.COLLECTION_NAME, filters={"_id" : ObjectId(id)}, field= { '$push': { self.USED_FOUNDATION_LIST : foundation } })
+    if list_foundation:
+      for foundation in list_foundation:
+         DB.update(collection=self.COLLECTION_NAME, filters={"_id" : ObjectId(id)}, field= { '$push': { self.USED_FOUNDATION_LIST : foundation } })
 
  def delete_used_foundation(self,id, list_foundation):
     for foundation in list_foundation:
