@@ -9,7 +9,8 @@ from src.tints.utils.json_encode import JSONEncoder
 
 
 user = Blueprint('user', __name__)
-CORS(user)
+CORS(user, expose_headers=["x-suggested-filename"],
+     resources={r"/*": {"origins": "*"}})
 
 @user.before_request
 def before_request():
