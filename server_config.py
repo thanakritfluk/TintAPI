@@ -24,7 +24,7 @@ host = os.environ.get('IP', '0.0.0.0')
 port = int(os.environ.get('PORT', 8080))
 
 cors = CORS(app, expose_headers=["x-suggested-filename"],
-     resources={r"/*": {"origins": "*"}})
+     resources={r"/*": {"origins": "*"}}, support_credentials=True)
 
 # Register route in application
 app.register_blueprint(color_prediction)
