@@ -1,3 +1,4 @@
+from asyncio.tasks import sleep
 from flask import request, Blueprint
 from flask_cors import cross_origin, CORS
 from src.tints.settings import USER_IMAGE_PATH, USER_IMAGE_FILE_TYPE
@@ -80,7 +81,9 @@ def login():
         json = user.login_user_info_json()
         json['token'] = access_token
         user_image_path = os.path.join(USER_IMAGE_PATH,"".join((str(user.id), USER_IMAGE_FILE_TYPE)))
+        sleep(1)
         json['base64_user_image'] = get_response_image(user_image_path)
+        sleep(2)
         return (json, 200)
     except:
         return ("User not found", 400)
