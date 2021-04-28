@@ -29,7 +29,7 @@ class DetectLandmarks(object):
         try:
             rects = self.detector(image,1)
             size = len(rects)
-            print("Size =",size)
+            # print("Size =",size)
             if size == 0:
                 return False
             else:
@@ -127,7 +127,7 @@ class DetectLandmarks(object):
         np_list1 = np.concatenate(
             (lanmarks[11], lanmarks[12], lanmarks[13], lanmarks[14], lanmarks[15], lanmarks[35], lanmarks[53], lanmarks[54]))
 
-        print(np_list1)
+        # print(np_list1)
         return np_list
 
     def get_lip_np(self, image, flag=None):
@@ -172,9 +172,9 @@ class DetectLandmarks(object):
         print('x,y get_interior_points')
         xmin, xmax = amin(x), amax(x)
         xrang = np.arange(xmin, xmax + 1, 1)
-        print(type(xrang))
+        # print(type(xrang))
         print('x-rang')
-        print(xrang)
+        # print(xrang)
         for i in xrang:
             try:
                 ylist = y[where(x == i)]

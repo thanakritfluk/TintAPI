@@ -112,7 +112,7 @@ def get_colors(image_path, n_colors=NUMBER_K):
   clusters.sort(key=lambda c: len(c.points), reverse = True)
   rgbs = [map(int, c.center.coordinates) for c in clusters]
   hex_list = list(map(rgb_to_hex, rgbs))
-  print("Hex Kmean 5 n =", hex_list)
+  # print("Hex Kmean 5 n =", hex_list)
   rgb_list = hex_to_rgb(hex_list)
-  print("RGB Kmean 5 n =", rgb_list)
+  # print("RGB Kmean 5 n =", rgb_list)
   return rgb_list

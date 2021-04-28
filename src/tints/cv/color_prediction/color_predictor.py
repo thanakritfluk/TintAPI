@@ -92,7 +92,7 @@ class ColorPredictor(DetectLandmarks):
             if similar_lipstick:
                 break
         # Print for check return lip color easeier
-        self.print_result(5,similar_lipstick)
+        # self.print_result(5,similar_lipstick)
         return self.get_custom_return_size(similar_lipstick)
 
 
@@ -135,7 +135,7 @@ class ColorPredictor(DetectLandmarks):
             if similar_foundation:
                 ref_skin_type = self.get_skin_type(skin_cluster)
                 break
-        self.print_result(5,similar_foundation)
+        # self.print_result(5,similar_foundation)
         return self.get_custom_return_size(similar_foundation), ref_skin_type
         
 
@@ -145,7 +145,7 @@ class ColorPredictor(DetectLandmarks):
         blush_list = Blush.get_all_blush()
         similar_blush = self.get_prediction_list(similar_blush, blush_list, dominant_color)
         # Print for check return lip color easeier
-        self.print_result(5,similar_blush)
+        # self.print_result(5,similar_blush)
         return self.get_custom_return_size(similar_blush)
 
     def get_user_skin_type(self):
