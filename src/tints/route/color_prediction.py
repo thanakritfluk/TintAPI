@@ -1,5 +1,5 @@
 from flask import request, Blueprint, send_file
-from flask_cors import cross_origin
+from flask_cors import cross_origin, CORS
 from src.tints.models.lipstick import Lipstick
 from src.tints.cv.color_prediction.color_predictor import ColorPredictor
 from src.tints.cv.detector import DetectLandmarks
@@ -12,7 +12,7 @@ from flask_jwt_extended import get_jwt_identity
 
 
 color_prediction = Blueprint('color_prediction', __name__)
-
+CORS(color_prediction)
 # This method executes before any API request
 
 

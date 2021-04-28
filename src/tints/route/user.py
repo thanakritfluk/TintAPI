@@ -1,6 +1,6 @@
 from bson import encode
 from flask import request, Blueprint
-from flask_cors import cross_origin
+from flask_cors import cross_origin, CORS
 from src.tints.models.user import User
 from src.tints.models.foundation import Foundation
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -9,7 +9,7 @@ from src.tints.utils.json_encode import JSONEncoder
 
 
 user = Blueprint('user', __name__)
-
+CORS(user)
 
 @user.before_request
 def before_request():

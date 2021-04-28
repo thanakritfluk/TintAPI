@@ -1,7 +1,7 @@
 import io
 import os
 from flask import Flask, request, send_from_directory, jsonify, Blueprint
-from flask_cors import cross_origin
+from flask_cors import cross_origin, CORS
 from PIL import Image
 from base64 import encodebytes
 from src.tints.utils.json_encode import JSONEncoder
@@ -10,7 +10,7 @@ from src.tints.settings import SIMULATOR_INPUT, SIMULATOR_OUTPUT
 
 
 simulation = Blueprint('simulation', __name__)
-
+CORS(simulation)
 # This method executes before any API request
 
 

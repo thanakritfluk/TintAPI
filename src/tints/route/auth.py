@@ -1,5 +1,5 @@
 from flask import request, Blueprint
-from flask_cors import cross_origin
+from flask_cors import cross_origin, CORS
 from src.tints.settings import USER_IMAGE_PATH, USER_IMAGE_FILE_TYPE
 from src.tints.cv.detector import DetectLandmarks
 from src.tints.models.user import User
@@ -14,7 +14,7 @@ from base64 import encodebytes
 
 
 auth = Blueprint('auth', __name__)
-
+CORS(auth) 
 
 @auth.before_request
 def before_request():
