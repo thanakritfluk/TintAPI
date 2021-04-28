@@ -20,32 +20,10 @@ color_prediction = Blueprint('color_prediction', __name__)
 def before_request():
     print('Start Color Prediction API request')
 
-
-@color_prediction.route('/api/add/lipstick')
-def insert_lipstick():
-    lipstick = Lipstick('FlukLip', '#EBA38B', 500)
-    insert = lipstick.insert()
-    return("Success insert id:"+str(insert), 200)
-
-
-@color_prediction.route('/api/lipstick/brand/list')
-def get_lipstick_brand():
-    brand = Lipstick.distinct_brand()
-    return(JSONEncoder().encode(brand), 200)
-
-
-@color_prediction.route('/api/lipstick/list/from/brand')
-def get_lipstick_brand_list():
-    brand_name = request.args['brand']
-    lst = Lipstick.find_lipstick_by_brand(brand_name)
-    return(JSONEncoder().encode(lst), 200)
-
 # Method 1 required cheek color at first
-
 
 @color_prediction.route('/api/v1/get/prediction/color', methods=['POST'])
 @jwt_required()
-@cross_origin()
 def prediction():
     current_user = get_jwt_identity()
     # check if the post request has the file part
@@ -60,17 +38,10 @@ def prediction():
     result = color_prediction.get_all_prediction(
         request.form.get('blush_hex_color'))
     return (JSONEncoder().encode(result), 200)
-    # result = color_prediction.get_blush_predict(request.form.get('blush_hex_color'))
-    # return ("JSONEncoder().encode(result)", 200)
-    # result = color_prediction.get_foundation_predict()
-    # return (JSONEncoder().encode(result), 200)
-    # predict_result = color_prediction.get_lipstick_predict()
-    # return (JSONEncoder().encode(predict_result), 200)
 
 
 @color_prediction.route('/api/v2/get/cheek/image', methods=['POST'])
 @jwt_required()
-@cross_origin()
 def get_cheek_image():
     current_user = get_jwt_identity()
     print("Current user =", current_user)
@@ -95,12 +66,9 @@ def get_cheek_image():
 
     return response
 
-# Method 2 required cheeck color after user pickle from cheek image
-
 
 @color_prediction.route('/api/v2/get/prediction/color', methods=['POST'])
 @jwt_required()
-@cross_origin()
 def get_color_prediction():
     current_user = get_jwt_identity()
     user_id = current_user

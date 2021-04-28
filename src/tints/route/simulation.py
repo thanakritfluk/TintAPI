@@ -35,7 +35,6 @@ def get_response_image(image_path):
 
 
 @simulation.route('/api/simulator/lip', methods=['POST'])
-@cross_origin()
 def simulator_lip():
     # check if the post request has the file part
     if 'user_image' not in request.files:
@@ -71,7 +70,6 @@ def simulator_lip():
 
 
 @simulation.route('/api/simulator/blush', methods=['POST'])
-@cross_origin()
 def simulator_value():
     # check if the post request has the file part
     if 'user_image' not in request.files:
@@ -111,7 +109,6 @@ def simulator_value():
 
 
 @simulation.route('/api/simulator/foundation', methods=['POST'])
-@cross_origin()
 def foundation_value():
     if 'user_image' not in request.files:
         return {"detail": "No file found"}, 400

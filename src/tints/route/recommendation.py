@@ -16,7 +16,6 @@ def before_request():
 
 @recommendation.route('/api/get/recommendation')
 @jwt_required()
-@cross_origin()
 def get_recommendation():
     user_id = get_jwt_identity()
     recommendations = Recommendation(str(user_id))

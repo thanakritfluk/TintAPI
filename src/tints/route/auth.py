@@ -87,7 +87,6 @@ def login():
     
 @auth.route('/api/auth/test/get/user_info/token', methods=['GET'])
 @jwt_required()
-@cross_origin()
 def get_user_info_from_token_for_test():
     try:
         user_id = get_jwt_identity()
@@ -103,7 +102,6 @@ def get_user_info_from_token_for_test():
 
 @auth.route('/api/auth/change/password', methods=['PUT'])
 @jwt_required()
-@cross_origin()
 def change_password():
     try:
         current_password = request.form.get('current_password')
@@ -122,7 +120,6 @@ def change_password():
 
 @auth.route('/api/auth/change/user/image', methods=['PUT'])
 @jwt_required()
-@cross_origin()
 def change_user_image():
     try:
         if 'user_image' not in request.files:
