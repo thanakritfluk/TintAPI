@@ -1,0 +1,36 @@
+name: tint-api-test
+region: sgp
+services:
+- cors:
+    allow_headers:
+    - '*'
+    allow_methods:
+    - GET
+    - OPTIONS
+    - POST
+    - PUT
+    - PATCH
+    - DELETE
+    allow_origins:
+    - prefix: https://tints-makeup.herokuapp.com
+    - prefix: https://tints-application.herokuapp.com
+    - prefix: http://localhost:8080
+  environment_slug: python
+  envs:
+  - key: MONGO_URI
+    scope: RUN_AND_BUILD_TIME
+    value: mongodb+srv://Fluk:1234@cluster0.gjhxa.mongodb.net/test
+  - key: JWT_SECRET_KEY
+    scope: RUN_AND_BUILD_TIME
+    value: skDFsd8fd3sHe2rwO3sas7dPC5lsak4djW
+  github:
+    branch: deploy-fix-error
+    deploy_on_push: true
+    repo: thanakritfluk/TintAPI
+  http_port: 8080
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  name: tint-api-test
+  routes:
+  - path: /
+  run_command: gunicorn --worker-tmp-dir /dev/shm server_config:app

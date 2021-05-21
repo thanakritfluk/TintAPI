@@ -6,7 +6,7 @@ from pylab import *
 from scipy import interpolate
 from imutils import face_utils
 from os.path import join as pjoin
-from src.tints.settings import COLOR_PREDICTION_INPUT, COLOR_PREDICTION_OUTPUT, SHAPE_68_PATH,SHAPE_81_PATH, SAVE_FILE_TYPE
+from src.tints.settings import COLOR_PREDICTION_INPUT, COLOR_PREDICTION_OUTPUT,SHAPE_81_PATH, SAVE_FILE_TYPE
 
 
 PREDICTOR_PATH = SHAPE_81_PATH
@@ -18,10 +18,24 @@ class DetectLandmarks(object):
     FILE_READ = 'FILE_READ'
     NETWORK_BYTE_STREAM = 'NETWORK_BYTE_STREAM'
     COLOR_PREDICTION_FILE_READ = "COLOR_PREDICTION_FILE_READ"
+    RECOMMENDATION_FILE_READ = "RECOMMENDATION_FILE_READ"
 
     def __init__(self):
         self.predictor = dlib.shape_predictor(PREDICTOR_PATH)
         self.detector = dlib.get_frontal_face_detector()
+
+
+    def check_is_face_exist(self, image):
+        try:
+            rects = self.detector(image,1)
+            size = len(rects)
+            # print("Size =",size)
+            if size == 0:
+                return False
+            else:
+                return True
+        except:
+            return False
 
     def get_landmarks(self, image):
         """ Extract the landmarks from a given image.
@@ -57,6 +71,8 @@ class DetectLandmarks(object):
         elif flag == self.COLOR_PREDICTION_FILE_READ:
             image = cv2.imread(image_file)
             landmarks = self.get_landmarks(image)
+        elif flag == self.RECOMMENDATION_FILE_READ:
+            landmarks = self.get_landmarks(image_file)
         if landmarks[0] is None or landmarks[1] is None:
             return None
         return landmarks
@@ -111,7 +127,7 @@ class DetectLandmarks(object):
         np_list1 = np.concatenate(
             (lanmarks[11], lanmarks[12], lanmarks[13], lanmarks[14], lanmarks[15], lanmarks[35], lanmarks[53], lanmarks[54]))
 
-        print(np_list1)
+        # print(np_list1)
         return np_list
 
     def get_lip_np(self, image, flag=None):
@@ -119,7 +135,7 @@ class DetectLandmarks(object):
         Returns points for lips as np array in given image.
         """
         lanmarks = self.get_face_data(image_file=image, flag=flag)
-        return lanmarks[48:]
+        return lanmarks[48:68]
 
     def get_lips(self, image_file, flag=None):
         """
@@ -156,9 +172,9 @@ class DetectLandmarks(object):
         print('x,y get_interior_points')
         xmin, xmax = amin(x), amax(x)
         xrang = np.arange(xmin, xmax + 1, 1)
-        print(type(xrang))
+        # print(type(xrang))
         print('x-rang')
-        print(xrang)
+        # print(xrang)
         for i in xrang:
             try:
                 ylist = y[where(x == i)]
