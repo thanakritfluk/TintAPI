@@ -14,7 +14,7 @@ from flask_jwt_extended import get_jwt_identity
 
 color_prediction = Blueprint('color_prediction', __name__)
 CORS(color_prediction)
-# This method executes before any API request
+# This method executes before any API requests
 
 
 @color_prediction.before_request
