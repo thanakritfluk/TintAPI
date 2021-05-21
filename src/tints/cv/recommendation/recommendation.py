@@ -1,4 +1,4 @@
-from time import sleep
+# from time import sleep
 from PIL import ImageColor
 from src.tints.cv.detector import DetectLandmarks
 from src.tints.models.lipstick import Lipstick
@@ -60,7 +60,7 @@ class Recommendation(DetectLandmarks):
     
     def get_recommendation(self):
         self.set_image()
-        sleep(2)
+        # sleep(2)
         # 1. สร้าง list เอาไว้เก็บ skin types
         # 2. เก็บสกินไทป์จากรูป user 
         # 3. check ว่า มี foundation ส่งมามั้ย 
